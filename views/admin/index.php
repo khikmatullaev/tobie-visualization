@@ -12,7 +12,7 @@ use kartik\date\DatePicker;
         'type' => DatePicker::TYPE_COMPONENT_PREPEND,
         'form' => $form,
         'pluginOptions' => [
-            'format' => 'yyyy/mm/00',
+            'format' => 'yyyy/mm/01',
             'autoclose' => true,
             'minViewMode' => 1,
         ]

@@ -6,16 +6,15 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
+use yii\helpers\ArrayHelper;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\Statistics;
 use app\models\Skill;
 use app\models\SkillConnection;
 
-class SiteController extends Controller
+class SiteController extends \yii\web\Controller
 {
-    public $defaultAction = "keyword";
-
     /**
      * @inheritdoc
      */
@@ -63,6 +62,12 @@ class SiteController extends Controller
         ];
     }
 
+
+    public function actionIndex()
+    {
+        return $this->render('index');
+    }
+
     /**
      * Login action.
      *
@@ -98,31 +103,49 @@ class SiteController extends Controller
     /**
      * Keyword displaying
      *
-     * @return Response
+     * @return Response|string
      */
     public function actionKeyword()
     {
-        return $this->render('keyword');
+        $statistic = new Statistics;
+        $statistics = Statistics::find()->where(['enabled' => 1])->orderBy(['date'=>SORT_ASC])->all();
+
+        $items = [];
+
+        foreach(ArrayHelper::map($statistics, 'id', 'date') as $key => $item)
+            $items[$key] = date('F Y', strtotime($item));
+
+        return $this->render('keyword', [
+            'model' => $statistic,
+            'statistics' => $items
+        ]);
     }
 
-    public function actionDatabase()
+    public function actionDatabase($month = null)
     {
-        $statistics = Statistics::find()->where(['id' => 1])->one();
-        //$skills = Skill::find()->where(['statistics_id' => $statistics->id])->andWhere("cluster <> 0")->all();
-        $skills = Skill::find()->where(['statistics_id' => $statistics->id])->all();
+        $id = ($month != null) ? $month : 1;
+        $statistics = Statistics::find()->where(['id' => $id])->one();
+        $skills = Skill::find()->where(['statistics_id' => $statistics->id])->andWhere("cluster <> 0")->all();
         $skill_connections = SkillConnection::find()->where(['statistics_id' => $statistics->id])->all();
 
         $json = [];
 
         foreach( $skills as $skill )
-            $json['nodes'][] = ['id' => $skill->name, 'group' => $skill->cluster];
+            $json['nodes'][] = ['id' => $skill->name, 'group' => $skill->cluster, 'description' => 'skill №'.$skill->id . ' '.$skill->name];
 
         foreach( $skill_connections as $skill_connection )
-            $json['links'][] = [
-                'source' => $skill_connection->skill1->name,
-                'target' => $skill_connection->skill2->name,
-                'value' => 1
-            ];
+            if($skill_connection->skill1->cluster != 0 && $skill_connection->skill2->cluster != 0)
+            {
+                $value = $skill_connection->skill1->cluster == $skill_connection->skill2->cluster ? 1 : 2;
+
+                $json['links'][] = [
+                    'source' => $skill_connection->skill1->name,
+                    'target' => $skill_connection->skill2->name,
+                    'value' => $value,
+                    'strength' => $skill_connection->strength,
+                    'description' => 'Connection №'.$skill_connection->id,
+                ];
+            }
 
         \Yii::$app->response->format = 'json';
         return $json;

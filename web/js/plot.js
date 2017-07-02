@@ -1,4 +1,7 @@
-function selectableForceDirectedGraph() {
+function graphVisualization()
+{
+    document.getElementById("graph").textContent = '';
+
     var svg = d3.select("svg"),
         width = +svg.attr("width"),
         height = +svg.attr("height");
@@ -21,11 +24,13 @@ function selectableForceDirectedGraph() {
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(100).strength(0.5))
+        .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(100).strength(0.6))
         .force("charge", d3.forceManyBody().strength(-100))
         .force("center", d3.forceCenter(width / 2, height / 2));
 
-    d3.json("database", function (error, graph) {
+    var month = document.getElementById('statistics-date').value;
+
+    d3.json("database?month=" + month, function (error, graph) {
         if (error) throw error;
 
         var link = g.append("g")
@@ -33,8 +38,16 @@ function selectableForceDirectedGraph() {
             .selectAll("line")
             .data(graph.links)
             .enter().append("line")
+            .attr("stroke", function(d) {
+                return (d.value === 1) ? "#d8d3d3" : "#a31818";
+            })
             .attr("stroke-width", function (d) {
-                return Math.sqrt(d.value);
+                return d.strength*1000;
+            });
+
+        link.append("title")
+            .text(function (d) {
+                return d.description;
             });
 
         var node = g.append("g")
@@ -53,7 +66,7 @@ function selectableForceDirectedGraph() {
 
         node.append("title")
             .text(function (d) {
-                return d.id;
+                return d.description;
             });
 
         var text = g.append("g").attr("class", "labels").selectAll("g")

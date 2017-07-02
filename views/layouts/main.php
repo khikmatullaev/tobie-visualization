@@ -28,7 +28,7 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'TOBIE Visualisation',
+        'brandLabel' => 'TOBIE Visualization',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -38,7 +38,7 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
             ['label' => 'Keyword\'s structure', 'url' => ['/site/keyword']],
-            ['label' => 'Strategic Diagram', 'url' => ['/site/about']],
+            ['label' => 'Strategic Diagram', 'url' => ['/site/strategic']],
             ['label' => 'Occurrence of skills', 'url' => ['/site/contact']],
             ['label' => 'CSV', 'url' => ['/admin/index']],
             Yii::$app->user->isGuest ? (

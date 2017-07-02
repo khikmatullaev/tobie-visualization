@@ -30,6 +30,7 @@ class Statistics extends \yii\db\ActiveRecord
     {
         return [
             [['date'], 'safe'],
+            [['date'], 'string'],
             [['enabled'], 'integer'],
         ];
     }
@@ -41,7 +42,7 @@ class Statistics extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'date' => 'Date',
+            'date' => 'Month',
             'enabled' => 'Enabled',
         ];
     }

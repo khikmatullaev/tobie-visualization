@@ -58,13 +58,14 @@ class AdminController extends \yii\web\Controller
 
             if( !empty($skill1) && !empty($skill2) )
             {
-                //if($columns[4] == 0 && $columns[6] == 0 && $columns[7] == 0)
-                //    continue;
+                if($columns[4] == 0 && $columns[6] == 0 && $columns[7] == 0)
+                    continue;
 
                 $skillConnection = new SkillConnection;
                 $skillConnection->statistics_id = $statistics_id;
                 $skillConnection->skill1_id = $skill1->id;
                 $skillConnection->skill2_id = $skill2->id;
+                $skillConnection->strength  = $columns[3];
 
                 $skillConnection->save();
             }
