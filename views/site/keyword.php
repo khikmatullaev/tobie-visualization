@@ -14,6 +14,8 @@ $this->title = 'TOBIE Visualisation';
 </div>
 
 <?php $form = ActiveForm::begin();?>
+    <?=$form->field($model, 'date')->dropDownList($statistics, ['onchange' => 'graphVisualization()']);?>
 <?php ActiveForm::end();?>
 
+<script>graphVisualization();</script>
 
