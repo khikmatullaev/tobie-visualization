@@ -11,13 +11,14 @@ class UploadForm extends Model
      * @var UploadedFile
      */
     public $csvFile;
-    public $date;
+    public $from_date;
+    public $to_date;
 
     public function rules()
     {
         return [
             [['csvFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv'],
-            [['date'], 'safe'],
+            [['from_date, to_date'], 'safe'],
         ];
     }
 

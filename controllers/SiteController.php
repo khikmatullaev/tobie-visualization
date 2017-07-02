@@ -13,7 +13,8 @@ use app\models\Statistics;
 use app\models\Skill;
 use app\models\SkillConnection;
 
-class SiteController extends \yii\web\Controller
+
+class SiteController extends Controller
 {
     /**
      * @inheritdoc
@@ -108,11 +109,11 @@ class SiteController extends \yii\web\Controller
     public function actionKeyword()
     {
         $statistic = new Statistics;
-        $statistics = Statistics::find()->where(['enabled' => 1])->orderBy(['date'=>SORT_ASC])->all();
+        $statistics = Statistics::find()->where(['enabled' => 1])->all();
 
         $items = [];
 
-        foreach(ArrayHelper::map($statistics, 'id', 'date') as $key => $item)
+        foreach(ArrayHelper::map($statistics, 'id', 'from_date') as $key => $item)
             $items[$key] = date('F Y', strtotime($item));
 
         return $this->render('keyword', [
@@ -123,15 +124,28 @@ class SiteController extends \yii\web\Controller
 
     public function actionDatabase($month = null)
     {
-        $id = ($month != null) ? $month : 1;
-        $statistics = Statistics::find()->where(['id' => $id])->one();
+        if( $month != null ) {
+            $m = explode(',', $month)[0];
+            $m = $m < 10 ? '0'.$m : $m;
+            $m = '2017-'.$m.'-01';
+
+            $statistics = Statistics::find()->where(['from_date' => $m])->one();
+        }else
+            $statistics = Statistics::find()->where(['id' => 1])->one();
+
         $skills = Skill::find()->where(['statistics_id' => $statistics->id])->andWhere("cluster <> 0")->all();
         $skill_connections = SkillConnection::find()->where(['statistics_id' => $statistics->id])->all();
 
         $json = [];
 
         foreach( $skills as $skill )
-            $json['nodes'][] = ['id' => $skill->name, 'group' => $skill->cluster, 'description' => 'skill №'.$skill->id . ' '.$skill->name];
+            $json['nodes'][] = [
+                'id' => $skill->name,
+                'group' => $skill->cluster,
+                'description' => 'skill №'.$skill->id . ' '.$skill->name,
+                'radius' => $skill->radius,
+
+            ];
 
         foreach( $skill_connections as $skill_connection )
             if($skill_connection->skill1->cluster != 0 && $skill_connection->skill2->cluster != 0)

@@ -8,7 +8,8 @@ use Yii;
  * This is the model class for table "statistics".
  *
  * @property integer $id
- * @property string $date
+ * @property string $from_date
+ * @property string $to_date
  * @property integer $enabled
  *
  * @property Skill[] $skills
@@ -29,8 +30,8 @@ class Statistics extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date'], 'safe'],
-            [['date'], 'string'],
+            [['from_date', 'to_date'], 'safe'],
+            [['from_date, to_date'], 'string'],
             [['enabled'], 'integer'],
         ];
     }
@@ -42,7 +43,8 @@ class Statistics extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'date' => 'Month',
+            'from_date' => 'From',
+            'to_date' => 'To',
             'enabled' => 'Enabled',
         ];
     }

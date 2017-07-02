@@ -4,7 +4,6 @@ namespace app\controllers;
 
 use yii\web\UploadedFile;
 use app\models\UploadForm;
-
 use app\models\Statistics;
 use app\models\Skill;
 use app\models\SkillConnection;
@@ -78,7 +77,8 @@ class AdminController extends \yii\web\Controller
 
         if( \Yii::$app->request->isPost )
         {
-            $date = \Yii::$app->request->post()['UploadForm']['date'];
+            $from_date = \Yii::$app->request->post()['UploadForm']['from_date'];
+            $to_date   = \Yii::$app->request->post()['UploadForm']['to_date'];
 
             $file = UploadedFile::getInstance($model, 'csvFile');
             $filename = 'Data.'.$file->extension;
@@ -87,9 +87,10 @@ class AdminController extends \yii\web\Controller
             {
                 // create month statistic
                 $statistics = new Statistics;
-                $statistics->date = $date;
-                $statistics->enabled = 1;
-                $statistics->save();
+                $statistics->from_date = $from_date;
+                $statistics->to_date   = $to_date;
+                $statistics->enabled   = 1;
+                $statistics->save(false);
 
                 $this->addSkill($filename, $statistics->id);
                 $this->addSkillConnection($filename, $statistics->id);

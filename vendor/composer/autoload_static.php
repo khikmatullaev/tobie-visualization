@@ -31,6 +31,7 @@ class ComposerStaticInite12894d3523366be6555f50cd9aa3c40
         ),
         'k' => 
         array (
+            'kartik\\slider\\' => 14,
             'kartik\\daterange\\' => 17,
             'kartik\\date\\' => 12,
             'kartik\\base\\' => 12,
@@ -115,6 +116,10 @@ class ComposerStaticInite12894d3523366be6555f50cd9aa3c40
             0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
             1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+        ),
+        'kartik\\slider\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/yii2-slider',
         ),
         'kartik\\daterange\\' => 
         array (

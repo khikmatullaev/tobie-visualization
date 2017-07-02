@@ -1,3 +1,9 @@
+.slider.slider-horizontal {
+    width: 70%;
+    height: 20px;
+    float: left;
+}
+
 .nodes circle {
      stroke: #fff;
      stroke-width: 1.5px;

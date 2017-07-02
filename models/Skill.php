@@ -11,6 +11,7 @@ use Yii;
  * @property integer $statistics_id
  * @property string $name
  * @property integer $cluster
+ * @property double $radius
  *
  * @property Statistics $statistics
  * @property SkillConnection[] $skillConnections
@@ -33,6 +34,7 @@ class Skill extends \yii\db\ActiveRecord
     {
         return [
             [['statistics_id', 'cluster'], 'integer'],
+            [['radius'], 'number'],
             [['name'], 'string', 'max' => 255],
             [['statistics_id'], 'exist', 'skipOnError' => true, 'targetClass' => Statistics::className(), 'targetAttribute' => ['statistics_id' => 'id']],
         ];
@@ -48,6 +50,7 @@ class Skill extends \yii\db\ActiveRecord
             'statistics_id' => 'Statistics ID',
             'name' => 'Name',
             'cluster' => 'Cluster',
+            'radius' => 'Radius',
         ];
     }
 

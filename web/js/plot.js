@@ -28,7 +28,7 @@ function graphVisualization()
         .force("charge", d3.forceManyBody().strength(-100))
         .force("center", d3.forceCenter(width / 2, height / 2));
 
-    var month = document.getElementById('statistics-date').value;
+    var month = document.getElementById('statistics-from_date').value;
 
     d3.json("database?month=" + month, function (error, graph) {
         if (error) throw error;
@@ -55,7 +55,9 @@ function graphVisualization()
             .selectAll("circle")
             .data(graph.nodes)
             .enter().append("circle")
-            .attr("r", 5)
+            .attr("r", function (d) {
+                return d.radius * 5;
+            })
             .attr("fill", function (d) {
                 return color(d.group);
             })

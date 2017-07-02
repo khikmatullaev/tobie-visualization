@@ -7,7 +7,20 @@ use kartik\date\DatePicker;
 
     <?= DatePicker::widget([
         'model' => $model,
-        'attribute' => 'date',
+        'attribute' => 'from_date',
+        'options' => ['placeholder' => 'Start date'],
+        'type' => DatePicker::TYPE_COMPONENT_PREPEND,
+        'form' => $form,
+        'pluginOptions' => [
+            'format' => 'yyyy/mm/01',
+            'autoclose' => true,
+            'minViewMode' => 1,
+        ]
+    ]);;?>
+
+    <?= DatePicker::widget([
+        'model' => $model,
+        'attribute' => 'to_date',
         'options' => ['placeholder' => 'Start date'],
         'type' => DatePicker::TYPE_COMPONENT_PREPEND,
         'form' => $form,
