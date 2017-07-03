@@ -64,6 +64,7 @@ class AdminController extends \yii\web\Controller
                 $skillConnection->statistics_id = $statistics_id;
                 $skillConnection->skill1_id = $skill1->id;
                 $skillConnection->skill2_id = $skill2->id;
+                $skillConnection->co_occurrence  = $columns[2];
                 $skillConnection->strength  = $columns[3];
 
                 $skillConnection->save();

@@ -12,6 +12,7 @@ use Yii;
  * @property integer $skill1_id
  * @property integer $skill2_id
  * @property double $strength
+ * @property double co_occurrence
  *
  * @property Statistics $statistics
  * @property Skill $skill1
@@ -34,8 +35,8 @@ class SkillConnection extends \yii\db\ActiveRecord
     {
         return [
             [['statistics_id', 'skill1_id', 'skill2_id'], 'integer'],
-            [['strength'], 'required'],
             [['strength'], 'number'],
+            [['co_occurrence'], 'number'],
             [['statistics_id'], 'exist', 'skipOnError' => true, 'targetClass' => Statistics::className(), 'targetAttribute' => ['statistics_id' => 'id']],
             [['skill1_id'], 'exist', 'skipOnError' => true, 'targetClass' => Skill::className(), 'targetAttribute' => ['skill1_id' => 'id']],
             [['skill2_id'], 'exist', 'skipOnError' => true, 'targetClass' => Skill::className(), 'targetAttribute' => ['skill2_id' => 'id']],
@@ -53,6 +54,7 @@ class SkillConnection extends \yii\db\ActiveRecord
             'skill1_id' => 'Skill1 ID',
             'skill2_id' => 'Skill2 ID',
             'strength' => 'Strength',
+            'co_occurrence' => 'Co-occurrence',
         ];
     }
 

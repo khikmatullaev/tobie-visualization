@@ -143,7 +143,7 @@ class SiteController extends Controller
                 'id' => $skill->name,
                 'group' => $skill->cluster,
                 'description' => 'skill №'.$skill->id . ' '.$skill->name,
-                'radius' => $skill->radius,
+                'radius' => $skill->occurrence,
 
             ];
 
