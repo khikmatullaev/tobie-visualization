@@ -1,17 +1,14 @@
 <?php
-
 use yii\widgets\ActiveForm;
 use kartik\slider\Slider;
-$this->title = 'TOBIE Visualisation';
+
+$this->title = 'Connection graph';
 ?>
 
-<script src="http://d3js.org/d3.v4.min.js"></script>
 <script src="/js/plot.js"></script>
 <link href="/css/plot.css" rel="stylesheet">
 
-<div>
-    <svg id="graph" width="960" height="600"></svg>
-</div>
+<div><svg id="graph" width="960" height="600"></svg></div>
 
 <?php $form = ActiveForm::begin();?>
 

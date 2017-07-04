@@ -18,9 +18,21 @@ AppAsset::register($this);
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript" src="https://code.highcharts.com/highcharts-more.js"></script>
+
+    <script type="text/javascript" src="/jQRangeSlider-5.7.2/jQRangeSlider-min.js"></script>
+    <script type="text/javascript" src="/timeSlider.js"></script>
+    <link rel="stylesheet" href="/jQRangeSlider-5.7.2/css/iThing.css" type="text/css" />
+
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -39,7 +51,7 @@ AppAsset::register($this);
         'items' => [
             ['label' => 'Keyword\'s structure', 'url' => ['/site/keyword']],
             ['label' => 'Strategic Diagram', 'url' => ['/site/strategic']],
-            ['label' => 'Occurrence of skills', 'url' => ['/site/contact']],
+            ['label' => 'Occurrence of skills', 'url' => ['/site/occurrence']],
             ['label' => 'CSV', 'url' => ['/admin/index']],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]

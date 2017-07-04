@@ -32,7 +32,7 @@ class SiteController extends Controller
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['keyword'],
+                        'actions' => ['keyword, strategic, occurrence'],
                         'allow' => true,
                         'roles' => ['*']
                     ]
@@ -63,7 +63,11 @@ class SiteController extends Controller
         ];
     }
 
-
+    /**
+     * The main site.
+     *
+     * @return Response|string
+     */
     public function actionIndex()
     {
         return $this->render('index');
@@ -160,6 +164,48 @@ class SiteController extends Controller
                     'description' => 'Connection №'.$skill_connection->id,
                 ];
             }
+
+        \Yii::$app->response->format = 'json';
+        return $json;
+    }
+
+    /**
+     * Strategic displaying
+     *
+     * @return Response|string
+     */
+    public function actionStrategic()
+    {
+        return $this->render('strategic');
+    }
+
+    /**
+     * Occurrence displaying
+     *
+     * @return Response|string
+     */
+    public function actionOccurrence()
+    {
+        return $this->render('occurrence');
+    }
+
+    public function actionOccurrencedb($month = null, $year = null)
+    {
+        $statistics = Statistics::find()->where(['id' => 1])->one();
+        $skills = Skill::find()->where(['statistics_id' => $statistics->id])
+            ->andWhere("cluster <> 0")
+            ->orderBy(['occurrence' => SORT_DESC])
+            ->limit(12)
+            ->all();
+
+        $json = [];
+        foreach( $skills as $skill )
+        {
+            $json[] = [
+                'name' => $skill->name,
+                'occurrence' => $skill->occurrence,
+            ];
+        }
 
         \Yii::$app->response->format = 'json';
         return $json;
