@@ -1,6 +1,6 @@
 <?php $this->title = 'Occurrence Diagram'; ?>
 
-<script src="/js/occurrence.js"></script>
+<script src="../../js/occurrence.js"></script>
 
 
 <div id="container" style="min-width: 320px; height:400px; margin: 0 auto"></div>

@@ -1,6 +1,6 @@
 <?php $this->title = 'Strategic Diagram'; ?>
 
-<script src="/js/strategic.js"></script>
+<script src="../../js/strategic.js"></script>
 
 <div id="container" style="width: 800px; height:400px; margin: 0 auto">
 

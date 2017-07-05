@@ -5,8 +5,8 @@ use kartik\slider\Slider;
 $this->title = 'Connection graph';
 ?>
 
-<script src="/js/plot.js"></script>
-<link href="/css/plot.css" rel="stylesheet">
+<script src="../../js/plot.js"></script>
+<link href="../../css/plot.css" rel="stylesheet">
 
 <div><svg id="graph" width="960" height="600"></svg></div>
 

@@ -25,9 +25,9 @@ AppAsset::register($this);
     <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
     <script type="text/javascript" src="https://code.highcharts.com/highcharts-more.js"></script>
 
-    <script type="text/javascript" src="/jQRangeSlider-5.7.2/jQRangeSlider-min.js"></script>
-    <script type="text/javascript" src="/timeSlider.js"></script>
-    <link rel="stylesheet" href="/jQRangeSlider-5.7.2/css/iThing.css" type="text/css" />
+    <script type="text/javascript" src="../../jQRangeSlider-5.7.2/jQRangeSlider-min.js"></script>
+    <script type="text/javascript" src="../../timeSlider.js"></script>
+    <link rel="stylesheet" href="../../jQRangeSlider-5.7.2/css/iThing.css" type="text/css" />
 
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
