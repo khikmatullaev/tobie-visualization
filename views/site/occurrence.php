@@ -1,6 +1,6 @@
 <?php $this->title = 'Occurrence Diagram'; ?>
 
-<script src="../../js/occurrence.js"></script>
+<script defer="defer" src="../../js/occurrence.js"></script>
 
 
 <div id="container" style="min-width: 320px; height:400px; margin: 0 auto"></div>
@@ -16,12 +16,3 @@
 
     </div>
 </div>
-
-<script type="text/javascript">
-
-    var data = getData();
-    drawCharts(data);
-
-    //console.log(country);//console.log(start_date,end_date);
-    //changeTimeRange(start_date,end_date);
-</script>

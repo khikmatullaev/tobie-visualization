@@ -12,7 +12,6 @@ for( var i=0; i<density.length; i++ ){
     mydata[i]["name"] = cluster[i];
     mydata[i]["color"] = color[cluster[i]];
 }
-console.log(mydata);
 //calculate median value of centrality and density
 function median(values) {
     values.sort( function(a,b) {return a - b;} );
@@ -138,7 +137,6 @@ $(function (){
     });
 
     for( var i=0 ; i<mydata.length ; i++){
-        console.log(median(centrality),median(density));
         //series[0] is the upper right quarter
         if(mydata[i].x>=median(centrality)&&mydata[i].y>=median(density)){
             chart.series[0].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});

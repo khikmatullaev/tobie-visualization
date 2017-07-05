@@ -72,7 +72,7 @@
 		26:new Array('SL','Slovenia'),
 		27:new Array('Uk','United Kingdom')
 	};
-	
+
 	var month_from = formatDT(current_month,current_year);
 	var month_to = formatDT(current_month,current_year);
 	$(document).ready(function(){
@@ -142,8 +142,9 @@
 		//console.log(start_date,end_date);
 	}
 	
+
 	$(document).ready(function(){
-		
+	
 		$("#slider-range").rangeSlider({
 			bounds: {min: date2num(min_date[0],min_date[1]), max: (date2num(max_date[0],max_date[1])+1)*2},
 			defaultValues:{min: date2num(current_month,current_year)*2, max: (date2num(current_month,current_year)+1)*2},
@@ -157,7 +158,7 @@
 			changeTimeRange(start_date,end_date);
 			$("#but1,#but2,#but3,#but4").css("background-color", "#FCFCFC");
 		});
-	
+		
 		$("#but1").on('click', function () {
 			var targetEl = $(this).data('target');
 			$.when($('.' + targetEl).siblings('a').fadeOut()).done(function () {

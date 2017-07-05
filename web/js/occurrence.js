@@ -140,3 +140,6 @@ function drawCharts(data)
         });
     });
 }
+
+var data = getData();
+drawCharts(data);
