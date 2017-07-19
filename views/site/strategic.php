@@ -1,5 +1,6 @@
 <?php $this->title = 'Strategic Diagram'; ?>
 
+<script defer="defer" src="../../timeSlider.js"></script>
 <script defer="defer" src="../../js/strategic.js"></script>
 
 <div style="width: 800px; height: 400px; margin: 0 auto">
