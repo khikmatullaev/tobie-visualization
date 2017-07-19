@@ -156,15 +156,15 @@
 			start_date = num2date(data.values.min/2);
 			end_date = num2date((data.values.max-2)/2);
 			changeTimeRange(start_date,end_date);
-			$("#but1,#but2,#but3,#but4").css("background-color", "#FCFCFC");
+			$("#but1,#but2,#but3,#but4").css("background-color", "buttonface");
 		});
 		
 		$("#but1").on('click', function () {
 			var targetEl = $(this).data('target');
 			$.when($('.' + targetEl).siblings('a').fadeOut()).done(function () {
 				$('.' + targetEl).fadeIn();
+                $("#but2,#but3,#but4").css("background-color", "buttonface");
 				$("#but1").css("background-color", "#2E9AFE");
-				$("#but2,#but3,#but4").css("background-color", "#FCFCFC");
 			});
 			range = 2;
 			setDate(range);
@@ -172,10 +172,10 @@
 		
 		$("#but2").on('click', function () {
 			var targetEl = $(this).data('target');
-			$.when($('.' + targetEl).siblings('a').fadeOut()).done(function () {
+            $.when($('.' + targetEl).siblings('a').fadeOut()).done(function () {
 				$('.' + targetEl).fadeIn();
+                $("#but1,#but3,#but4").css("background-color", "buttonface");
 				$("#but2").css("background-color", "#2E9AFE");
-				$("#but1,#but3,#but4").css("background-color", "#FCFCFC");
 			});
 			range = 6;
 			setDate(range);
@@ -185,8 +185,8 @@
 			var targetEl = $(this).data('target');
 			$.when($('.' + targetEl).siblings('a').fadeOut()).done(function () {
 				$('.' + targetEl).fadeIn();
+                $("#but1,#but2,#but4").css("background-color", "buttonface");
 				$("#but3").css("background-color", "#2E9AFE");
-				$("#but1,#but2,#but4").css("background-color", "#FCFCFC");
 			});
 			range = 12;
 			setDate(range);
@@ -196,8 +196,8 @@
 			var targetEl = $(this).data('target');
 			$.when($('.' + targetEl).siblings('a').fadeOut()).done(function () {
 				$('.' + targetEl).fadeIn();
+                $("#but1,#but2,#but3").css("background-color", "buttonface");
 				$("#but4").css("background-color", "#2E9AFE");
-				$("#but1,#but2,#but3").css("background-color", "#FCFCFC");
 			});
 			range = 24;
 			setDate(range);

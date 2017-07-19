@@ -10,6 +10,8 @@ use app\models\SkillConnection;
 
 class AdminController extends \yii\web\Controller
 {
+    public $layout = "/admin";
+
     protected function appendSkill($name, $cluster, $statistics_id)
     {
         $existSkill = Skill::find()->where(['name' => $name, 'statistics_id' => $statistics_id])->one();
@@ -72,6 +74,11 @@ class AdminController extends \yii\web\Controller
         }
     }
 
+    protected function skillOccurrence($filename, $statistics_id)
+    {
+
+    }
+
     public function actionIndex()
     {
         $model = new UploadForm();
@@ -80,23 +87,28 @@ class AdminController extends \yii\web\Controller
         {
             $from_date = \Yii::$app->request->post()['UploadForm']['from_date'];
             $to_date   = \Yii::$app->request->post()['UploadForm']['to_date'];
+            $country   = \Yii::$app->request->post()['UploadForm']['country'];
 
-            $file = UploadedFile::getInstance($model, 'csvFile');
-            $filename = 'Data.'.$file->extension;
+            $fileConnection = UploadedFile::getInstance($model, 'connection');
+            $fileNameConnection = 'Data.'.$fileConnection->extension;
 
-            if( $file->saveAs($filename) )
+            $fileOccurrence = UploadedFile::getInstance($model, 'occurrence');
+            $fileNameOccurrence = 'Data.'.$fileOccurrence->extension;
+
+            if( $fileConnection->saveAs($fileNameConnection) && $fileOccurrence->saveAs($fileNameOccurrence) )
             {
                 // create month statistic
                 $statistics = new Statistics;
                 $statistics->from_date = $from_date;
                 $statistics->to_date   = $to_date;
+                $statistics->country  = $country;
                 $statistics->enabled   = 1;
                 $statistics->save(false);
 
-                $this->addSkill($filename, $statistics->id);
-                $this->addSkillConnection($filename, $statistics->id);
+                $this->addSkill($fileNameConnection, $statistics->id);
+                $this->addSkillConnection($fileNameConnection, $statistics->id);
+                $this->skillOccurrence($fileNameOccurrence, $statistics->id);
 
-                unlink($filename);
                 return $this->redirect(['site/keyword']);
             }
         }

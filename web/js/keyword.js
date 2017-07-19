@@ -28,7 +28,7 @@ function graphVisualization()
         .force("charge", d3.forceManyBody().strength(-100))
         .force("center", d3.forceCenter(width / 2, height / 2));
 
-    var month = document.getElementById('statistics-from_date').value;
+    var month = $('#slider-time-begin').text();
 
     d3.json("database?month=" + month, function (error, graph) {
         if (error) throw error;

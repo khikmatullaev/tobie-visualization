@@ -30,8 +30,8 @@ class Statistics extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['from_date', 'to_date'], 'safe'],
-            [['from_date, to_date'], 'string'],
+            [['from_date', 'to_date, country'], 'safe'],
+            [['from_date, to_date, country'], 'string'],
             [['enabled'], 'integer'],
         ];
     }
@@ -45,6 +45,7 @@ class Statistics extends \yii\db\ActiveRecord
             'id' => 'ID',
             'from_date' => 'From',
             'to_date' => 'To',
+            'country' => 'Country',
             'enabled' => 'Enabled',
         ];
     }

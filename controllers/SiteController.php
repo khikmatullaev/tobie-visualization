@@ -112,31 +112,38 @@ class SiteController extends Controller
      */
     public function actionKeyword()
     {
-        $statistic = new Statistics;
-        $statistics = Statistics::find()->where(['enabled' => 1])->all();
+        return $this->render('keyword');
+    }
 
-        $items = [];
+    protected function monthToNumber($month)
+    {
+        if( $month != null )
+        {
+            $m = explode(',', $month)[0];
 
-        foreach(ArrayHelper::map($statistics, 'id', 'from_date') as $key => $item)
-            $items[$key] = date('F Y', strtotime($item));
+            switch($m)
+            {
+                case "Jan": return '2017-01-01';
+                case "Feb": return '2017-02-01';
+                case "Mar": return '2017-03-01';
+                case "Apr": return '2017-04-01';
+                case "May": return '2017-05-01';
+                case "Jun": return '2017-06-01';
+                case "Jul": return '2017-07-01';
+                case "Aug": return '2017-08-01';
+                case "Sept": return '2017-09-01';
+                case "Oct": return '2017-10-01';
+                case "Nov": return '2017-11-01';
+                case "Dec": return '2017-12-01';
+            }
+        }
 
-        return $this->render('keyword', [
-            'model' => $statistic,
-            'statistics' => $items
-        ]);
+        return '2017-01-01';
     }
 
     public function actionDatabase($month = null)
     {
-        if( $month != null ) {
-            $m = explode(',', $month)[0];
-            $m = $m < 10 ? '0'.$m : $m;
-            $m = '2017-'.$m.'-01';
-
-            $statistics = Statistics::find()->where(['from_date' => $m])->one();
-        }else
-            $statistics = Statistics::find()->where(['id' => 1])->one();
-
+        $statistics = Statistics::find()->where(['from_date' => $this->monthToNumber($month)])->one();
         $skills = Skill::find()->where(['statistics_id' => $statistics->id])->andWhere("cluster <> 0")->all();
         $skill_connections = SkillConnection::find()->where(['statistics_id' => $statistics->id])->all();
 
