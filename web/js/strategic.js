@@ -23,137 +23,171 @@ function median(values) {
 }
 
 $(function (){
-    //$('#container').highcharts({
-    var chart = new Highcharts.chart('container', {
-        chart: {
-            type: 'bubble',
-            plotBorderWidth: 1,
-            zoomType: 'xy'
-        },
+//$('#container').highcharts({
+	var chart = new Highcharts.chart('container', {
+		chart: {
+			type: 'bubble',
+			plotBorderWidth: 1,
+			zoomType: 'xy',
+		},
+		
+		credits: {
+			enabled: false
+		},
 
-        credits: {
-            enabled: false
-        },
+		legend: {
+			align: 'center',
+			verticalAlign: 'bottom',
+			//layout: 'horizatal',
+			x: 0,
+			y: 0,
+			backgroundColor: '#FCFFC5',
+			borderColor: '#C98657',
+			borderWidth: 1
+		},
 
-        legend: {
-            align: 'right',
-            verticalAlign: 'top',
-            layout: 'vertical',
-            x: 0,
-            y: 40,
-            backgroundColor: '#FCFFC5',
-            borderColor: '#C98657',
-            borderWidth: 1
-        },
+		title: {
+			text: 'Centrality and Density of Clusters'
+		},
 
-        title: {
-            text: 'Centrality and Density of Clusters'
-        },
-
-        xAxis: {
-            gridLineWidth: 1,
-            title: {
-                text: 'Centrality'
-            },
-            plotLines: [{
-                color: 'black',
-                dashStyle: 'dot',
-                width: 2,
-                value: median(centrality),
-                label: {
-                    rotation: 0,
-                    y: 15,
-                    style: {
-                        fontStyle: 'italic'
-                    },
-                    text: 'Median Centrality: ' + median(centrality)
-                },
-                zIndex: 3
-            }]
-        },
+		xAxis: {
+			gridLineWidth: 1,
+			title: {
+				text: 'Centrality'
+			},
+			plotLines: [{
+				color: 'black',
+				dashStyle: 'dot',
+				width: 2,
+				value: median(centrality),
+				label: {
+					rotation: 0,
+					y: 15,
+					style: {
+						fontStyle: 'italic'
+					},
+					text: 'Median Centrality: ' + median(centrality)
+				},
+				zIndex: 3
+			}]
+		},
 
 
-        yAxis: {
-            startOnTick: false,
-            endOnTick: false,
-            title: {
-                text: 'Density'
-            },
-            //labels: {
-            //    format: '{value} gr'
-            //},
-            maxPadding: 0.2,
-            plotLines: [{
-                color: 'black',
-                dashStyle: 'dot',
-                width: 2,
-                value: median(density),
-                label: {
-                    align: 'right',
-                    style: {
-                        fontStyle: 'italic'
-                    },
-                    text: 'Median Density: ' + median(density),
-                    x: -10
-                },
-                zIndex: 3
-            }]
-        },
+		yAxis: {
+			startOnTick: false,
+			endOnTick: false,
+			title: {
+				text: 'Density'
+			},
+			//labels: {
+			//    format: '{value} gr'
+			//},
+			maxPadding: 0.2,
+			plotLines: [{
+				color: 'black',
+				dashStyle: 'dot',
+				width: 2,
+				value: median(density),
+				label: {
+					align: 'right',
+					style: {
+						fontStyle: 'italic'
+					},
+					text: 'Median Density: ' + median(density),
+					x: -10
+				},
+				zIndex: 3
+			}]
+		},
 
-        tooltip: {
-            useHTML: true,
-            headerFormat: '<table>',
-            pointFormat: '<tr><th colspan="2"><h3>Cluster {point.name}</h3></th></tr>' +
-            '<tr><th>Centrality: </th><td>{point.x}</td></tr>' +
-            '<tr><th>Density: </th><td>{point.y}</td></tr>' +
-            '<tr><th>Number of Nodes:</th><td>{point.z}</td></tr>',
-            footerFormat: '</table>',
-            followPointer: true
-        },
+		tooltip: {
+			useHTML: true,
+			headerFormat: '<table>',
+			pointFormat: '<tr><th colspan="2"><h3>Cluster {point.name}</h3></th></tr>' +
+				'<tr><th>Centrality: </th><td>{point.x}</td></tr>' +
+				'<tr><th>Density: </th><td>{point.y}</td></tr>' +
+				'<tr><th>Number of Nodes:</th><td>{point.z}</td></tr>',
+			footerFormat: '</table>',
+			followPointer: true
+		},
+		
+		plotOptions: {
+			series: {
+				dataLabels: {
+					enabled: true,
+					format: '{point.name}'
+				},
+				cursor: 'pointer',
+				point: {
+					events: {
+						click: function () {
+							alert("jump to keywork structure of cluster "+this.options.name);
+						}
+					}
+				}
+			},
+			bubble: {
+				minSize:3,
+				maxSize:50
+			},
+		},
 
-        plotOptions: {
-            series: {
-                dataLabels: {
-                    enabled: true,
-                    format: '{point.name}'
-                }
-            },
-            bubble: {
-                minSize:3,
-                maxSize:50
-            },
-        },
+		series: 
+			[{
+				name: "quarter 1"
+			},{
+				name: "quarter 2"
+			},{
+				name: "quarter 3"
+			},{
+				name: "quarter 4"
+			}],
+			
+	});
+	
 
-        series: [{
-            name: "quarter 1"
-        },{
-            name: "quarter 2"
-        },{
-            name: "quarter 3"
-        },{
-            name: "quarter 4"
-        }]
-
-    });
-
-    for( var i=0 ; i<mydata.length ; i++){
-        //series[0] is the upper right quarter
-        if(mydata[i].x>=median(centrality)&&mydata[i].y>=median(density)){
-            chart.series[0].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
-        }
-        //series[1] is the lower right quarter
-        else if(mydata[i].x>=median(centrality)&&mydata[i].y<=median(density)){
-            chart.series[1].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
-        }
-        //series[2] is the lower left quarter
-        else if(mydata[i].x<=median(centrality)&&mydata[i].y<=median(density)){
-            chart.series[2].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
-        }
-        //series[3] is the upper left quarter
-        else if(mydata[i].x<=median(centrality)&&mydata[i].y>=median(density)){
-            chart.series[3].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
-        }
-    }
-    //console.log(chart.series[0].data);
+	for( var i=0 ; i<mydata.length ; i++){
+		//console.log(median(centrality),median(density));
+		//series[0] is the upper right quarter
+		if(mydata[i].x>=median(centrality)&&mydata[i].y>=median(density)){
+			chart.series[0].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
+		}
+		//series[1] is the lower right quarter
+		else if(mydata[i].x>=median(centrality)&&mydata[i].y<=median(density)){
+			chart.series[1].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
+		}
+		//series[2] is the lower left quarter
+		else if(mydata[i].x<=median(centrality)&&mydata[i].y<=median(density)){
+			chart.series[2].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
+		}
+		//series[3] is the upper left quarter
+		else if(mydata[i].x<=median(centrality)&&mydata[i].y>=median(density)){
+			chart.series[3].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
+		}
+	}
+	
 });
-
+//----------------Countries selections-------------------------------
+$(document).ready(function(){
+	for(var i=0;i<28;i++){
+		$("#country").append("<option value='"+country[i][0]+"'>"+country[i][1]+"</option>");
+	}
+	$("#country").find("option[value="+country[27][0]+"]").attr("selected",true);
+	$("#country").change(function(){
+		var checkText=$("#country").find("option:selected").text(); 
+		var checkValue=$("#country").val();
+		alert("change the chart with data of "+checkText+"("+checkValue+")");
+	});
+});
+//----------------Threshold selections-------------------------------
+$(document).ready(function(){
+	$("form").submit(function(e){
+		co = $("#co").val();
+		ps1 = $("#ps1").val();
+		ps2 = $("#ps2").val();
+		
+		//--------Redraw charts according to threshold---------------
+		alert("Change chart according to the threshold\n"+"Co-occurrence: "+co+"\n"+"pass1link: "+ps1+"\n"+"pass2link: "+ps2);
+	});
+});
+//-------------------------------------------------------------------
