@@ -1,12 +1,12 @@
 <?php $this->title = 'Occurrence Diagram'; ?>
 
 <script defer="defer" type="text/javascript" src="../../timeSlider.js"></script>
-<script defer="defer" src="../../js/occurrence.js"></script>
+<script defer="defer" type="text/javascript" src="../../js/occurrence.js"></script>
 
 
-<div id="container" style="min-width: 320px; height:400px; margin: 0 auto"></div>
+<div id="container" style="width: 80%; height:40%; margin: 0 auto"></div>
 
-<div style="width: 800px; height:200px; margin: auto">
+<div style="width: 60%; height: 20%; margin: auto">
     <div id="time-range">
         <div class="sliders_step1">
             <div id="slider-range"></div>

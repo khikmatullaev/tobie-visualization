@@ -1,17 +1,56 @@
+var visibleSeriesIndex = 27;
+var co = $("#co").val();
+var ps1 = $("#ps1").val();
+var ps2 = $("#ps2").val();
+var mydata;
+var cluster = new Array();
+var density = new Array();
+var centrality = new Array();
+var nodeNum = new Array();
+
+console.log(start_date+";"+end_date+";"+country[visibleSeriesIndex][0]);
+//------------send request to server to get data with (from_date,to_date,country)------------
+function getData(from_date,to_date,country){
+	//console.log(from_date+";"+to_date+";"+country);
+    var result = new Array();
+
+    $.ajax({
+        url: 'strategicdb',
+        type: "GET",
+        data:{from_date:from_date, to_date:to_date, country:country, co:co, ps1:ps1, ps2:ps2},
+        dataType: "json",
+        async: false,
+        error: function(){
+            alert('Error loading XML document\n'+'from_date: '+from_date+'\n'+'end_date: '+to_date+'\n'+'country: '+country);
+        },
+        success: function(data){
+            result = data;
+        }
+    });
+
+    return result;
+}
+function setData(){
+	mydata = getData(num2ymd(start_date[0],start_date[1]),num2ymd(end_date[0],end_date[1]),country[visibleSeriesIndex][0]);
+	//console.log(mydata);
+	cluster = new Array();
+	density= new Array();
+	centrality = new Array();
+	nodeNum = new Array();
+	for( var i=0; i<mydata.length; i++ ){
+		centrality[i] = parseFloat(mydata[i].centrality.toFixed(6));
+		density[i] = parseFloat(mydata[i].density.toFixed(6));
+		nodeNum[i] = mydata[i].nodeNum;
+		cluster[i] = mydata[i].name;
+	}
+}
+/*
 var cluster = new Array(1,2,3,4,5,6,7,8,9,10);
 var density = new Array(0.00034,0.00058,0.00047,0.00020,0.00110,0.00045,0.00072,0.00020,0.00028,0.00039);
 var centrality = new Array(0.00698,0.00169,0.00715,0.00318,0.00227,0.00725,0.00325,0.00450,0.00075,0.00548);
 var nodeNum = new Array(4,4,3,10,5,14,7,10,7,8);
+*/
 
-var mydata = new Array();
-for( var i=0; i<density.length; i++ ){
-    mydata[i] = new Array();
-    mydata[i]["x"] = centrality[i];
-    mydata[i]["y"] = density[i];
-    mydata[i]["z"] = nodeNum[i];
-    mydata[i]["name"] = cluster[i];
-    mydata[i]["color"] = color[cluster[i]];
-}
 //calculate median value of centrality and density
 function median(values) {
     values.sort( function(a,b) {return a - b;} );
@@ -54,22 +93,7 @@ $(function (){
 			gridLineWidth: 1,
 			title: {
 				text: 'Centrality'
-			},
-			plotLines: [{
-				color: 'black',
-				dashStyle: 'dot',
-				width: 2,
-				value: median(centrality),
-				label: {
-					rotation: 0,
-					y: 15,
-					style: {
-						fontStyle: 'italic'
-					},
-					text: 'Median Centrality: ' + median(centrality)
-				},
-				zIndex: 3
-			}]
+			}
 		},
 
 
@@ -82,22 +106,7 @@ $(function (){
 			//labels: {
 			//    format: '{value} gr'
 			//},
-			maxPadding: 0.2,
-			plotLines: [{
-				color: 'black',
-				dashStyle: 'dot',
-				width: 2,
-				value: median(density),
-				label: {
-					align: 'right',
-					style: {
-						fontStyle: 'italic'
-					},
-					text: 'Median Density: ' + median(density),
-					x: -10
-				},
-				zIndex: 3
-			}]
+			maxPadding: 0.2
 		},
 
 		tooltip: {
@@ -121,15 +130,18 @@ $(function (){
 				point: {
 					events: {
 						click: function () {
-							alert("jump to keywork structure of cluster "+this.options.name);
+							//alert("jump to keywork structure of cluster "+this.options.name+": "+document.URL);
+							location.href = "../site/keyword";
 						}
 					}
 				}
 			},
+			/*
 			bubble: {
 				minSize:3,
-				maxSize:50
+				maxSize:20
 			},
+			*/
 		},
 
 		series: 
@@ -145,49 +157,142 @@ $(function (){
 			
 	});
 	
+	function setSeries(){
+		setData();
+		chart.series[0].setData([]);
+		chart.series[1].setData([]);
+		chart.series[2].setData([]);
+		chart.series[3].setData([]);
+		var c_median = median(centrality);
+		var d_median = median(density);
+		for( var i=0 ; i<mydata.length ; i++){
+			var cen = parseFloat(mydata[i].centrality.toFixed(6));
+			var den = parseFloat(mydata[i].density.toFixed(6));
+			//console.log(c_median,d_median);
+			//series[0] is the upper right quarter
+			if(cen>=c_median && den>=d_median){
+				chart.series[0].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
+			}
+			//series[1] is the lower right quarter
+			else if(cen>=c_median && den<=d_median){
+				chart.series[1].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
+			}
+			//series[2] is the lower left quarter
+			else if(cen<c_median && den<d_median){
+				chart.series[2].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
+			}
+			//series[3] is the upper left quarter
+			else if(cen<c_median && den>d_median){
+				chart.series[3].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
+			}
+		}
+		chart.xAxis[0].removePlotLine('xPlotLine');
+		chart.xAxis[0].addPlotLine({
+			color: 'black',
+			dashStyle: 'dot',
+			width: 2,
+			value: c_median,
+			label: {
+				rotation: 0,
+				y: 15,
+				style: {
+					fontStyle: 'italic'
+				},
+				text: 'Median Centrality: ' + c_median
+			},
+			zIndex: 3,
+			id: 'xPlotLine'
+		});
+		chart.yAxis[0].removePlotLine('yPlotLine');
+		chart.yAxis[0].addPlotLine({
+			color: 'black',
+			dashStyle: 'dot',
+			width: 2,
+			value: d_median,
+			label: {
+				align: 'right',
+				style: {
+					fontStyle: 'italic'
+				},
+				text: 'Median Density: '+ d_median,
+				x: -10
+			},
+			zIndex: 3,
+			id: 'yPlotLine'
+		});
+	}
+	setSeries();	//draw default chart
+	//----------------Countries selections-------------------------------
+	$(document).ready(function(){
+		for(var i=0;i<28;i++){
+			$("#country").append("<option value='"+country[i][0]+"'>"+country[i][1]+"</option>");
+		}
+		$("#country").find("option[value="+country[visibleSeriesIndex][0]+"]").attr("selected",true);
+		$("#country").change(function(){
+			var checkText = $("#country").find("option:selected").text(); 
+			var checkValue = $("#country").val();
+			var checkIndex = $("#country").find("option:selected").index();
+			//alert("change the chart with data of "+checkText+"("+checkValue+")");
+			visibleSeriesIndex = checkIndex;
+			setSeries();
+		});
+	});
+	//----------------Threshold selections-------------------------------
+	$(document).ready(function(){
+		$("#submit").on('click', function () {
+			co = $("#co").val();
+			ps1 = $("#ps1").val();
+			ps2 = $("#ps2").val();
+			
+			//--------Redraw charts according to threshold---------------
+			//alert("Change chart according to the threshold\n"+"co_occurrence: "+co+"\n"+"pass1link: "+ps1+"\n"+"pass2link: "+ps2);
+			setSeries();
+		});
+	});
+	//------------------------Reset data for series when timeslider change---------------------
+	$("#slider-range").bind("valuesChanged", function(e, data){
+		start_date = num2date(data.values.min/2);
+		end_date = num2date((data.values.max-2)/2);
+		changeTimeRange(start_date,end_date);
+		$("#but1,#but2,#but3,#but4").css("background-color", "buttonface");
+		//console.log(start_date+";"+end_date+";"+visibleSeriesIndex);
+		setSeries();
+	});
+});
 
-	for( var i=0 ; i<mydata.length ; i++){
-		//console.log(median(centrality),median(density));
-		//series[0] is the upper right quarter
-		if(mydata[i].x>=median(centrality)&&mydata[i].y>=median(density)){
-			chart.series[0].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
-		}
-		//series[1] is the lower right quarter
-		else if(mydata[i].x>=median(centrality)&&mydata[i].y<=median(density)){
-			chart.series[1].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
-		}
-		//series[2] is the lower left quarter
-		else if(mydata[i].x<=median(centrality)&&mydata[i].y<=median(density)){
-			chart.series[2].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
-		}
-		//series[3] is the upper left quarter
-		else if(mydata[i].x<=median(centrality)&&mydata[i].y>=median(density)){
-			chart.series[3].addPoint({x:mydata[i].x, y:mydata[i].y, z:mydata[i].z, name:mydata[i].name, color:mydata[i].color});
-		}
-	}
-	
-});
-//----------------Countries selections-------------------------------
-$(document).ready(function(){
-	for(var i=0;i<28;i++){
-		$("#country").append("<option value='"+country[i][0]+"'>"+country[i][1]+"</option>");
-	}
-	$("#country").find("option[value="+country[27][0]+"]").attr("selected",true);
-	$("#country").change(function(){
-		var checkText=$("#country").find("option:selected").text(); 
-		var checkValue=$("#country").val();
-		alert("change the chart with data of "+checkText+"("+checkValue+")");
-	});
-});
-//----------------Threshold selections-------------------------------
-$(document).ready(function(){
-	$("form").submit(function(e){
-		co = $("#co").val();
-		ps1 = $("#ps1").val();
-		ps2 = $("#ps2").val();
-		
-		//--------Redraw charts according to threshold---------------
-		alert("Change chart according to the threshold\n"+"Co-occurrence: "+co+"\n"+"pass1link: "+ps1+"\n"+"pass2link: "+ps2);
-	});
-});
-//-------------------------------------------------------------------
+//---------------SQL query for finding centrality with threshold-----
+/*
+statistics_id=1(SELECT id FROM statistics WHERE from_date="" AND to_date="" AND Country="")
+cluster=1(SELECT DISTINCT cluster FROM skill WHERE cluster!=0) ---loop
+
+​SELECT strength FROM skill_connection 
+WHERE ((`skill1_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=1 AND cluster=1) 
+	AND `skill2_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=1 AND cluster!=0 AND cluster!=1))
+    OR (`skill1_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=1 AND cluster!=0 AND cluster!=1)
+    AND `skill2_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=1 AND cluster=1)))
+    AND `statistics_id`=1
+    AND `co_occurrence`>=2
+    ORDER BY `strength` DESC
+    LIMIT 2
+*/
+//---------------SQL query for finding density with threshold---------
+/*
+SELECT * FROM skill_connection 
+WHERE `skill1_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=3 AND cluster=3) 
+	AND `skill2_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=3 AND cluster=3)
+    AND `statistics_id`=3 
+    AND `co_occurrence`>=2
+    ORDER BY `strength` DESC
+    LIMIT 4
+*/
+//---------------SQL query for finding numNode with threshold---------
+/*
+SELECT count(c.name) FROM
+(SELECT DISTINCT b.skill as name FROM
+(SELECT a.`skill1_id` as skill FROM
+(SELECT * FROM skill_connection WHERE `skill1_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=1 AND cluster=1) AND `skill2_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=1 AND cluster=1) AND `statistics_id`=1 AND `co_occurrence`>=2 ORDER BY `strength` DESC LIMIT 4) as a) as b
+UNION
+SELECT DISTINCT b.skill as name FROM
+(SELECT a.`skill2_id` as skill FROM
+(SELECT * FROM skill_connection WHERE `skill1_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=1 AND cluster=1) AND `skill2_id` in (SELECT `name` FROM `skill` WHERE `statistics_id`=1 AND cluster=1) AND `statistics_id`=1 AND `co_occurrence`>=2 ORDER BY `strength` DESC LIMIT 4) as a) as b) as c
+*/

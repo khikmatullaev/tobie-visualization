@@ -181,9 +181,89 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionStrategic()
+	 public function actionStrategic()
     {
-        return $this->render('strategic');
+		return $this->render('strategic');
+	}
+    public function actionStrategicdb($from_date, $to_date, $country, $co, $ps1, $ps2)
+    {
+		//find id in table statistics according to from_date,to_date,country
+		$statistics = Statistics::find()->where(['country' => $country])
+			->andWhere(['from_date' => $from_date])
+			->andWhere(['to_date' => $to_date])
+			->one();
+
+        //find cluster names in table skill
+		$sql_1 = "SELECT DISTINCT cluster FROM skill WHERE statistics_id=:id AND cluster!=0";
+		$clusters = Skill::findBySql($sql_1,[':id' => $statistics->id])->all();
+		
+		$json = [];
+		for($i=0 ; $i<count($clusters) ; $i++){
+			$skills_1 = Skill::find()->where(['statistics_id' => $statistics->id])
+				->andWhere(['cluster' => $clusters[$i]->cluster])
+				->all();
+			$skill1_list = [];
+			foreach( $skills_1 as $skill )
+			{
+				$skill1_list[] = $skill->id;
+			}
+			//calculate the density for each cluster
+			$d_strengths = SkillConnection::find()->where(['statistics_id' => $statistics->id])
+				->andWhere(['skill1_id' => $skill1_list])
+				->andWhere(['skill2_id' => $skill1_list])
+				->andWhere(['>=','co_occurrence', $co])
+				->orderBy(['strength' => SORT_DESC])
+				->limit($ps1)
+				->all();
+			$density[$i] = 0;
+			foreach( $d_strengths as $strength )
+			{
+				$density[$i] = $density[$i] + $strength->strength;
+			}
+			$density[$i] = $density[$i]/count($d_strengths);
+			
+			//calculate the centrality for each cluster
+			$skills_2 = Skill::find()->where(['statistics_id' => $statistics->id])
+				->andWhere(['<>','cluster', $clusters[$i]->cluster])
+				->andWhere('cluster <> 0') 
+				->all();
+			$skill2_list = [];
+			foreach( $skills_2 as $skill )
+			{
+				$skill2_list[] = $skill->id;
+			}
+			$c_strengths = SkillConnection::find()->where(['statistics_id' => $statistics->id])
+				->andWhere(['or',['and',['skill1_id' => $skill1_list],['skill2_id' => $skill2_list]],['and',['skill1_id' => $skill2_list],['skill2_id' => $skill1_list]]])
+				->andWhere(['>=','co_occurrence', $co])
+				->orderBy(['strength' => SORT_DESC])
+				->limit($ps2)
+				->all();
+			$centrality[$i] = 0;
+			foreach( $c_strengths as $strength )
+			{
+				$centrality[$i] = $centrality[$i] + ($strength->strength)*($strength->strength);
+			}
+			$centrality[$i] = sqrt($centrality[$i]);
+			
+			//count the number of node in each cluster
+			$skill_list = [];
+			foreach( $d_strengths as $connection )
+			{
+				$skill_list[] = $connection->skill1_id;
+				$skill_list[] = $connection->skill2_id;
+			}
+			$num[$i] = count(array_unique($skill_list));
+
+			$json[] = [
+				'name' => $clusters[$i]->cluster,
+				'density' => $density[$i],
+				'centrality' => $centrality[$i],
+				'nodeNum' => $num[$i],
+			];
+		}
+
+        \Yii::$app->response->format = 'json';
+        return $json;
     }
 
     /**
@@ -196,13 +276,15 @@ class SiteController extends Controller
         return $this->render('occurrence');
     }
 
-    public function actionOccurrencedb($month = null, $year = null)
+    public function actionOccurrencedb($from_date, $to_date, $country)
     {
-        $statistics = Statistics::find()->where(['id' => 1])->one();
+        $statistics = Statistics::find()->where(['country' => $country])
+			->andWhere(['from_date' => $from_date])
+			->andWhere(['to_date' => $to_date])
+			->one();
         $skills = Skill::find()->where(['statistics_id' => $statistics->id])
-            ->andWhere("cluster <> 0")
             ->orderBy(['occurrence' => SORT_DESC])
-            ->limit(12)
+            ->limit(10)
             ->all();
 
         $json = [];
