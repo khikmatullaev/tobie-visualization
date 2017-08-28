@@ -66,6 +66,21 @@ $(function () {
 			pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
 		},
 		plotOptions: {
+			series: {
+				dataLabels: {
+					enabled: true,
+					format: '{point.name}'
+				},
+				cursor: 'pointer',
+				point: {
+					events: {
+						click: function () {
+							//alert("jump to keywork structure of cluster "+this.options.name+": "+document.URL);
+							location.href = "./strategic";
+						}
+					}
+				}
+			},
 			column: {
 				stacking: 'normal',
 				animation: false,

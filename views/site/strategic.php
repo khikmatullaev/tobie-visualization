@@ -14,15 +14,8 @@
 			<select id="country"></select>
 		</div>
 		<div style="margin-top: 50px">
-			<form>
-				<span title="Minimal co-occurrence: &#10;connections will be elimated if the co-occurrence is less than this threshold"><label>co-occurrence</label></span><br>
-				<input type="text" name="co" id="co" style="width : 115px" value=0><br>
-				<span title="Maximal internal links: &#10;for one cluster, it has connections inside this cluster no more than this threshold"><label>pass1link</label></span><br>
-				<input type="text" name="ps1" id="ps1" style="width : 115px" value=10><br>
-				<span title="Maximal external links: &#10;for one cluster, it has connections with other cluster no more than this threshold"><label>pass2link</label></span><br>
-				<input type="text" name="ps2" id="ps2" style="width : 115px" value=10><br><br>
-				<input type="button" value="submit" id="submit">
-			</form>
+			<label>Threshold</label><br>
+			<select id="threshold"></select>
 		</div>
 	</div>
 </div>

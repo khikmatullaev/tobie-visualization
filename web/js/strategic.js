@@ -1,14 +1,20 @@
 var visibleSeriesIndex = 27;
-var co = $("#co").val();
-var ps1 = $("#ps1").val();
-var ps2 = $("#ps2").val();
+//var co = $("#co").val();
+//var ps1 = $("#ps1").val();
+//var ps2 = $("#ps2").val();
+var co = 0;
+var ps1 = 10;
+var ps2 = 10;
 var mydata;
 var cluster = new Array();
 var density = new Array();
 var centrality = new Array();
 var nodeNum = new Array();
-
-console.log(start_date+";"+end_date+";"+country[visibleSeriesIndex][0]);
+var xAxisMax;
+var xAxisMin;
+var yAxisMax;
+var yAxisMin;
+//console.log(start_date+";"+end_date+";"+country[visibleSeriesIndex][0]);
 //------------send request to server to get data with (from_date,to_date,country)------------
 function getData(from_date,to_date,country){
 	//console.log(from_date+";"+to_date+";"+country);
@@ -43,6 +49,12 @@ function setData(){
 		nodeNum[i] = mydata[i].nodeNum;
 		cluster[i] = mydata[i].name;
 	}
+	var xAxis = setAxis(centrality);
+	xAxisMax = xAxis["max"];
+	xAxisMin = xAxis["min"];
+	var yAxis = setAxis(density);
+	yAxisMax = yAxis["max"];
+	yAxisMin = yAxis["min"];
 }
 /*
 var cluster = new Array(1,2,3,4,5,6,7,8,9,10);
@@ -59,6 +71,51 @@ function median(values) {
         return values[half];
     else
         return (values[half-1] + values[half]) / 2.0;
+}
+
+function setAxis(value){
+	var interval = (Math.max.apply(null,value) - Math.min.apply(null,value)) / 4;
+	var maxValue = Math.max.apply(null,value);
+	var minValue = Math.min.apply(null,value);
+	if(interval == 0){
+		var max = 4.75;
+		interval = maxValue / 2.5;
+	}
+	else{
+		var max = maxValue / interval;
+		var min = minValue / interval;
+	}
+	if(interval<=1&&interval>0.1){
+		interval = Math.ceil(interval*10)/10;
+	}
+	else if(interval<=0.1&&interval>0.01){
+		interval = Math.ceil(interval*100)/100;
+	}
+	else if(interval<=0.01&&interval>0.001){
+		interval = Math.ceil(interval*1000)/1000;
+	}
+	else if(interval<=0.001&&interval>=0.0001){
+		interval = Math.ceil(interval*10000)/10000;
+	}
+	
+	if(max>4&&max<=4.25){
+		max = 4.5 * interval;
+		min = -0.5 * interval;
+	}
+	else if(max>4.25&&max<=4.5){
+		max = 4.75 * interval;
+		min = -0.25 * interval;
+	}
+	else if(max>4.5&&max<=4.75){
+		max = 5 * interval;
+		min = 0 * interval;
+	}
+	else if(max>4.75&&max<=5){
+		max = 5.25 * interval;
+		min = 0.25 * interval;
+	}
+	var info = {"max":max,"min":min};
+	return info;
 }
 
 $(function (){
@@ -96,17 +153,12 @@ $(function (){
 			}
 		},
 
-
 		yAxis: {
 			startOnTick: false,
 			endOnTick: false,
 			title: {
 				text: 'Density'
-			},
-			//labels: {
-			//    format: '{value} gr'
-			//},
-			maxPadding: 0.2
+			}
 		},
 
 		tooltip: {
@@ -136,23 +188,26 @@ $(function (){
 					}
 				}
 			},
-			/*
 			bubble: {
-				minSize:3,
-				maxSize:20
-			},
-			*/
+				//minSize:8,
+				//maxSize:20,
+				events: {
+					legendItemClick: function(){
+						console.log(this.chart.xAxis);
+					}
+				}
+			}
 		},
 
 		series: 
 			[{
-				name: "quarter 1"
+				name: "upper right"
 			},{
-				name: "quarter 2"
+				name: "lower right"
 			},{
-				name: "quarter 3"
+				name: "lower left"
 			},{
-				name: "quarter 4"
+				name: "upper left"
 			}],
 			
 	});
@@ -220,6 +275,9 @@ $(function (){
 			zIndex: 3,
 			id: 'yPlotLine'
 		});
+		//console.log(xAxisMax+" ; "+xAxisMin);
+		chart.xAxis[0].setExtremes(xAxisMin, xAxisMax);
+		chart.yAxis[0].setExtremes(yAxisMin, yAxisMax);
 	}
 	setSeries();	//draw default chart
 	//----------------Countries selections-------------------------------
@@ -237,7 +295,35 @@ $(function (){
 			setSeries();
 		});
 	});
-	//----------------Threshold selections-------------------------------
+	//----------------New Threshold selections-------------------------------
+	$(document).ready(function(){
+		var th1 = new Array(2,2,3,4);
+		var th2 = new Array(2,3,2,3);
+		var th3 = new Array(2,2,3,2);
+		for(var i=0;i<4;i++){
+			$("#threshold").append("<option value='"+th1[i]+","+th2[i]+","+th3[i]+"'>"+'co: '+th1[i]+' ; ps1: '+th2[i]+' ; ps2: '+th3[i]+"</option>");
+		}
+		$("#threshold").change(function(){
+			paramArray=$("#threshold").val().split(",");
+			var _co = paramArray[0];
+			var _ps1 = paramArray[1];
+			var _ps2 = paramArray[2];
+			console.log(_co+" ; "+_ps1+" ; "+_ps2);
+		});
+	});
+	/*
+	//----------------Old Threshold selections-------------------------------
+	<div style="margin-top: 50px">
+		<form>
+			<span title="Minimal co-occurrence: &#10;connections will be elimated if the co-occurrence is less than this threshold"><label>co-occurrence</label></span><br>
+			<input type="text" name="co" id="co" style="width : 115px" value=0><br>
+			<span title="Maximal internal links: &#10;for one cluster, it has connections inside this cluster no more than this threshold"><label>pass1link</label></span><br>
+			<input type="text" name="ps1" id="ps1" style="width : 115px" value=10><br>
+			<span title="Maximal external links: &#10;for one cluster, it has connections with other cluster no more than this threshold"><label>pass2link</label></span><br>
+			<input type="text" name="ps2" id="ps2" style="width : 115px" value=10><br><br>
+			<input type="button" value="submit" id="submit">
+		</form>
+	</div>
 	$(document).ready(function(){
 		$("#submit").on('click', function () {
 			co = $("#co").val();
@@ -249,6 +335,7 @@ $(function (){
 			setSeries();
 		});
 	});
+	*/
 	//------------------------Reset data for series when timeslider change---------------------
 	$("#slider-range").bind("valuesChanged", function(e, data){
 		start_date = num2date(data.values.min/2);
