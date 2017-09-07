@@ -1,10 +1,3 @@
-var visibleSeriesIndex = 27;
-//var co = $("#co").val();
-//var ps1 = $("#ps1").val();
-//var ps2 = $("#ps2").val();
-var co = 0;
-var ps1 = 10;
-var ps2 = 10;
 var mydata;
 var cluster = new Array();
 var density = new Array();
@@ -98,7 +91,7 @@ function setAxis(value){
 		interval = Math.ceil(interval*10000)/10000;
 	}
 	
-	if(max>4&&max<=4.25){
+	if(max>=4&&max<=4.25){
 		max = 4.5 * interval;
 		min = -0.5 * interval;
 	}
@@ -119,12 +112,10 @@ function setAxis(value){
 }
 
 $(function (){
-//$('#container').highcharts({
 	var chart = new Highcharts.chart('container', {
 		chart: {
 			type: 'bubble',
 			plotBorderWidth: 1,
-			zoomType: 'xy',
 		},
 		
 		credits: {
@@ -137,6 +128,7 @@ $(function (){
 			//layout: 'horizatal',
 			x: 0,
 			y: 0,
+			width: 400,
 			backgroundColor: '#FCFFC5',
 			borderColor: '#C98657',
 			borderWidth: 1
@@ -201,13 +193,13 @@ $(function (){
 
 		series: 
 			[{
-				name: "upper right"
+				name: "Quarter 4 - upper left"
 			},{
-				name: "lower right"
+				name: "Quarter 1 - upper right"
 			},{
-				name: "lower left"
+				name: "Quarter 3- lower left"
 			},{
-				name: "upper left"
+				name: "Quarter 2 - lower right"
 			}],
 			
 	});
@@ -224,21 +216,21 @@ $(function (){
 			var cen = parseFloat(mydata[i].centrality.toFixed(6));
 			var den = parseFloat(mydata[i].density.toFixed(6));
 			//console.log(c_median,d_median);
-			//series[0] is the upper right quarter
+			//series[1] is the upper right quarter
 			if(cen>=c_median && den>=d_median){
-				chart.series[0].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
-			}
-			//series[1] is the lower right quarter
-			else if(cen>=c_median && den<=d_median){
 				chart.series[1].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
+			}
+			//series[3] is the lower right quarter
+			else if(cen>=c_median && den<=d_median){
+				chart.series[3].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
 			}
 			//series[2] is the lower left quarter
 			else if(cen<c_median && den<d_median){
 				chart.series[2].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
 			}
-			//series[3] is the upper left quarter
+			//series[0] is the upper left quarter
 			else if(cen<c_median && den>d_median){
-				chart.series[3].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
+				chart.series[0].addPoint({x:cen, y:den, z:nodeNum[i], name:cluster[i], color:color[cluster[i]]});
 			}
 		}
 		chart.xAxis[0].removePlotLine('xPlotLine');
@@ -292,23 +284,29 @@ $(function (){
 			var checkIndex = $("#country").find("option:selected").index();
 			//alert("change the chart with data of "+checkText+"("+checkValue+")");
 			visibleSeriesIndex = checkIndex;
+			setLocalCountry(visibleSeriesIndex);
 			setSeries();
 		});
 	});
 	//----------------New Threshold selections-------------------------------
 	$(document).ready(function(){
-		var th1 = new Array(2,2,3,4);
-		var th2 = new Array(2,3,2,3);
-		var th3 = new Array(2,2,3,2);
-		for(var i=0;i<4;i++){
-			$("#threshold").append("<option value='"+th1[i]+","+th2[i]+","+th3[i]+"'>"+'co: '+th1[i]+' ; ps1: '+th2[i]+' ; ps2: '+th3[i]+"</option>");
+		for(var i=0;i<5;i++){
+			$("#threshold").append("<option value="+i+">"+'co: '+threshold[i][0]+' ; ps1: '+threshold[i][1]+' ; ps2: '+threshold[i][2]+"</option>");
 		}
+		$("#threshold").find("option[value="+thIndex+"]").attr("selected",true);
 		$("#threshold").change(function(){
+			/*
 			paramArray=$("#threshold").val().split(",");
-			var _co = paramArray[0];
-			var _ps1 = paramArray[1];
-			var _ps2 = paramArray[2];
-			console.log(_co+" ; "+_ps1+" ; "+_ps2);
+			co = paramArray[0];
+			ps1 = paramArray[1];
+			ps2 = paramArray[2];
+			*/
+			var value = $("#threshold").val();
+			co = threshold[value][0];
+			ps1 = threshold[value][1];
+			ps2 = threshold[value][2];
+			setLocalThreshold(value);
+			setSeries();
 		});
 	});
 	/*

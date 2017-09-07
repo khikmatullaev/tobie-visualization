@@ -9,11 +9,11 @@
 <div style="width: 800px; height: 400px; margin: 0 auto">
 	<div id="container" style="width: 600px; height:400px; float: left"></div>
 	<div style="width: 190px; height:400px; float: right">
-		<div style="margin-top: 10px">
+		<div style="margin-top: 50px">
 			<label>Country</label><br>
 			<select id="country"></select>
 		</div>
-		<div style="margin-top: 50px">
+		<div style="margin-top: 25px">
 			<label>Threshold</label><br>
 			<select id="threshold"></select>
 		</div>

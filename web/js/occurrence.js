@@ -1,8 +1,5 @@
-var defaultCountry = "Uk";
-var visibleSeriesIndex = 27;
 //------------send request to server to get data with (from_date,to_date,country)------------
 function getData(from_date,to_date,country){
-	//console.log(from_date+";"+to_date+";"+country);
     var result = new Array();
 
     $.ajax({
@@ -98,6 +95,8 @@ $(function () {
 							}
 						}
 						visibleSeriesIndex = this.index;
+						setLocalCountry(visibleSeriesIndex);
+						
 						setSeries(visibleSeriesIndex);
 						setSubtitle(visibleSeriesIndex);
 					}
@@ -165,7 +164,7 @@ $(function () {
 	//-------------------------Default legend setting-----------------
 	for( var i=0; i<=27; i++){
 		var name = chart.series[i].name;
-		if(name==defaultCountry){
+		if(name==country[visibleSeriesIndex][0]){
 			chart.series[i].show();
 			setSeries(i);
 		}
@@ -180,7 +179,6 @@ $(function () {
 		var data = getData(num2ymd(start_date[0],start_date[1]),num2ymd(end_date[0],end_date[1]),country);
 		var count = new Array();
 		var skill = new Array();
-
 		for( var i = 0; i < data.length; i++ )
 		{
 			skill[i] = data[i]['name'];
@@ -207,5 +205,7 @@ $(function () {
 		//console.log(start_date+";"+end_date+";"+visibleSeriesIndex);
 		setSeries(visibleSeriesIndex);
 		setSubtitle(visibleSeriesIndex);
+		setLocalStartDate(start_date[0],start_date[1]);
+		setLocalEndDate(end_date[0],end_date[1])
 	});
 });

@@ -1,12 +1,41 @@
-//-------------default chart setting-----------------------------------
-var current_month = 8;
-var current_year = 2016;
-var min_date = new Array(1,2016); 	//the earliest date
-var max_date = new Array(12,2017);	//the latest date
-var start_date = [current_month,current_year];
-var end_date = [current_month,current_year];
 //---------------------------------------------------------------------
-//console.log(current_month,current_year);
+var threshold = {
+	 0:new Array(1,2,2),
+	 1:new Array(2,2,3),
+	 2:new Array(2,3,3),
+	 3:new Array(2,4,4),
+	 4:new Array(0,9,9),
+};
+var country = {
+	 0:new Array('AT','Austria'),
+	 1:new Array('BE','Belgium'),
+	 2:new Array('BG','Bulgaria'),
+	 3:new Array('CY','Cyprus'),
+	 4:new Array('CZ','Czech Republic'),
+	 5:new Array('DE','Germany'),
+	 6:new Array('DK','Denmark'),
+	 7:new Array('EE','Estonia'),
+	 8:new Array('ES','Spain'),
+	 9:new Array('FI','Finland'),
+	10:new Array('FR','France'),
+	11:new Array('GR','Greece'),
+	12:new Array('HR','Croatia'),
+	13:new Array('HU','Hungary'),
+	14:new Array('IE','Ireland'),
+	15:new Array('IT','Italy'),
+	16:new Array('LT','Lithuania'),
+	17:new Array('LU','Luxembourg'),
+	18:new Array('LV','Latvia'),
+	19:new Array('MT','Malta'),
+	20:new Array('NL','Netherlands'),
+	21:new Array('PL','Poland'),
+	22:new Array('PT','Portugal'),
+	23:new Array('RO','Romania'),
+	24:new Array('SE','Sweden'),
+	25:new Array('SK','Slovakia'),
+	26:new Array('SL','Slovenia'),
+	27:new Array('Uk','United Kingdom')
+};
 var num2month = {
 	 1: new Array("Jan"),
 	 2: new Array("Feb"),
@@ -42,44 +71,83 @@ var color = {
    15: "#CC66FF",		//purple
    16: "#009966",		//green
 };
-var country = {
-	 0:new Array('AT','Austria'),
-	 1:new Array('BE','Belgium'),
-	 2:new Array('BG','Bulgaria'),
-	 3:new Array('CY','Cyprus'),
-	 4:new Array('CZ','Czech Republic'),
-	 5:new Array('DE','Germany'),
-	 6:new Array('DK','Denmark'),
-	 7:new Array('EE','Estonia'),
-	 8:new Array('ES','Spain'),
-	 9:new Array('FI','Finland'),
-	10:new Array('FR','France'),
-	11:new Array('GR','Greece'),
-	12:new Array('HR','Croatia'),
-	13:new Array('HU','Hungary'),
-	14:new Array('IE','Ireland'),
-	15:new Array('IT','Italy'),
-	16:new Array('LT','Lithuania'),
-	17:new Array('LU','Luxembourg'),
-	18:new Array('LV','Latvia'),
-	19:new Array('MT','Malta'),
-	20:new Array('NL','Netherlands'),
-	21:new Array('PL','Poland'),
-	22:new Array('PT','Portugal'),
-	23:new Array('RO','Romania'),
-	24:new Array('SE','Sweden'),
-	25:new Array('SK','Slovakia'),
-	26:new Array('SL','Slovenia'),
-	27:new Array('Uk','United Kingdom')
-};
 
-var month_from = formatDT(current_month,current_year);
-var month_to = formatDT(current_month,current_year);
+//-------------default chart setting-----------------------------------
+var storage = window.localStorage;
+var start_month;
+var start_year;
+var end_month;
+var end_year;
+var visibleSeriesIndex;
+var thIndex;
+if(!storage.getItem("startMonth")||!storage.getItem("startYear")){
+	start_month = 8;
+	start_year = 2016;
+	setLocalStartDate(start_month,start_year);
+}
+else{
+	start_month = parseInt(storage.getItem("startMonth"));
+	start_year = parseInt(storage.getItem("startYear"));
+}
+if(!storage.getItem("endMonth")||!storage.getItem("endYear")){
+	end_month = 8;
+	end_year = 2016;
+	setLocalEndDate(end_month,end_year);
+}
+else{
+	end_month = parseInt(storage.getItem("endMonth"));
+	end_year = parseInt(storage.getItem("endYear"));
+}
+if(!storage.getItem("countryIndex")){
+	visibleSeriesIndex = 27;
+	setLocalCountry(visibleSeriesIndex);
+}
+else{
+	visibleSeriesIndex = parseInt(storage.getItem("countryIndex"));
+}
+if(!storage.getItem("thresholdIndex")){
+	thIndex = 4;
+	setLocalThreshold(thresholdIndex);
+}
+else{
+	thIndex = parseInt(storage.getItem("thresholdIndex"));
+}
+var co = threshold[thIndex][0];
+var ps1 = threshold[thIndex][1];
+var ps2 = threshold[thIndex][2];
+console.log(co+" ; "+ps1+" ; "+ps2);
+var min_date = new Array(1,2016); 	//the earliest date
+var max_date = new Array(12,2017);	//the latest date
+
+var start_date = [start_month,start_year];
+var end_date = [end_month,end_year];
+var month_from = formatDT(start_month,start_year);
+var month_to = formatDT(end_month,end_year);
 $(document).ready(function(){
-	$(".slider-time").html(month_from);
-	$(".slider-time2").html("");
-	//$("#but1").css("background-color", "#2E9AFE");
+	if(start_date[0]==end_date[0]&&start_date[1]==end_date[1]){
+		$(".slider-time").html(month_from);
+		$(".slider-time2").html("");
+	}
+	else{
+		$(".slider-time").html(month_from);
+		$(".slider-time2").html(" - "+month_to);
+	}
 });
+//----------Set LocalStorage------------------------------------------------------
+function setLocalStartDate(start_month,start_year){
+	storage.setItem("startMonth",start_month);
+	storage.setItem("startYear",start_year);
+}
+function setLocalEndDate(end_month,end_year){
+	storage.setItem("endMonth",end_month);
+	storage.setItem("endYear",end_year);
+}
+function setLocalCountry(index){
+	storage.setItem("countryIndex",index);
+}
+function setLocalThreshold(index){
+	storage.setItem("thresholdIndex",index);
+}
 //----------transfer [month,year] to number(min date of timeslider is 0)----------
 function date2num(month,year){
 	var zero = min_date[0] + 12 * min_date[1];
@@ -157,7 +225,7 @@ $(document).ready(function(){
 
 	$("#slider-range").rangeSlider({
 		bounds: {min: date2num(min_date[0],min_date[1]), max: (date2num(max_date[0],max_date[1])+1)*2},
-		defaultValues:{min: date2num(current_month,current_year)*2, max: (date2num(current_month,current_year)+1)*2},
+		defaultValues:{min: date2num(start_month,start_year)*2, max: (date2num(end_month,end_year)+1)*2},
 		valueLabels:"hide",
 		step: 2,
 	});
