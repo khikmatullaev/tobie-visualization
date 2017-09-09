@@ -107,7 +107,7 @@ else{
 }
 if(!storage.getItem("thresholdIndex")){
 	thIndex = 4;
-	setLocalThreshold(thresholdIndex);
+	setLocalThreshold(thIndex);
 }
 else{
 	thIndex = parseInt(storage.getItem("thresholdIndex"));
