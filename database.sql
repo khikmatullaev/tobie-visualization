@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.4.15.7
--- http://www.phpmyadmin.net
+-- version 4.7.0
+-- https://www.phpmyadmin.net/
 --
--- Хост: 127.0.0.1:3306
--- Время создания: Июл 19 2017 г., 11:50
--- Версия сервера: 5.5.50
--- Версия PHP: 5.6.23
+-- Хост: 127.0.0.1
+-- Время создания: Сен 10 2017 г., 18:29
+-- Версия сервера: 10.1.26-MariaDB
+-- Версия PHP: 7.1.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -26,13 +28,13 @@ SET time_zone = "+00:00";
 -- Структура таблицы `skill`
 --
 
-CREATE TABLE IF NOT EXISTS `skill` (
+CREATE TABLE `skill` (
   `id` int(11) NOT NULL,
   `statistics_id` int(11) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
   `cluster` int(11) DEFAULT NULL,
   `occurrence` double NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1064 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `skill`
@@ -533,14 +535,14 @@ INSERT INTO `skill` (`id`, `statistics_id`, `name`, `cluster`, `occurrence`) VAL
 -- Структура таблицы `skill_connection`
 --
 
-CREATE TABLE IF NOT EXISTS `skill_connection` (
+CREATE TABLE `skill_connection` (
   `id` int(11) NOT NULL,
   `statistics_id` int(11) DEFAULT NULL,
   `skill1_id` int(11) DEFAULT NULL,
   `skill2_id` int(11) DEFAULT NULL,
   `strength` double NOT NULL,
   `co_occurrence` double NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1725 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `skill_connection`
@@ -896,34 +898,37 @@ INSERT INTO `skill_connection` (`id`, `statistics_id`, `skill1_id`, `skill2_id`,
 -- Структура таблицы `statistics`
 --
 
-CREATE TABLE IF NOT EXISTS `statistics` (
+CREATE TABLE `statistics` (
   `id` int(11) NOT NULL,
   `from_date` date DEFAULT NULL,
   `to_date` date NOT NULL,
+  `occurrence` double(10,2) NOT NULL,
+  `pass1link` int(11) NOT NULL,
+  `pass2link` int(11) NOT NULL,
   `country` varchar(64) NOT NULL,
   `enabled` int(255) DEFAULT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп данных таблицы `statistics`
 --
 
-INSERT INTO `statistics` (`id`, `from_date`, `to_date`, `country`, `enabled`) VALUES
-(1, '2017-01-01', '2017-06-01', 'Uk', 1),
-(24, '2017-06-01', '2017-01-01', 'Uk', 1),
-(25, '2017-02-01', '2017-02-01', 'Uk', 1),
-(26, '2017-03-01', '2017-03-01', 'Uk', 1),
-(27, '2017-04-01', '2017-04-01', 'Uk', 1),
-(28, '2017-05-01', '2017-05-01', 'Uk', 1),
-(29, '2017-07-01', '2017-07-01', 'Uk', 1),
-(30, '2017-08-01', '2017-08-01', 'Uk', 1),
-(31, '2017-09-01', '2017-09-01', 'Uk', 1),
-(32, '2017-10-01', '2017-10-01', 'Uk', 1),
-(33, '2017-11-01', '2017-11-01', 'Uk', 1),
-(34, '2017-12-01', '2017-12-01', 'Uk', 1),
-(35, '2016-01-01', '2016-01-01', 'Uk', 1),
-(36, '2016-02-01', '2017-02-01', 'AT', 1),
-(37, '2016-02-01', '2017-02-01', 'AT', 1);
+INSERT INTO `statistics` (`id`, `from_date`, `to_date`, `occurrence`, `pass1link`, `pass2link`, `country`, `enabled`) VALUES
+(1, '2017-01-01', '2017-06-01', 0.00, 0, 0, 'Uk', 1),
+(24, '2017-06-01', '2017-01-01', 0.00, 0, 0, 'Uk', 1),
+(25, '2017-02-01', '2017-02-01', 0.00, 0, 0, 'Uk', 1),
+(26, '2017-03-01', '2017-03-01', 0.00, 0, 0, 'Uk', 1),
+(27, '2017-04-01', '2017-04-01', 0.00, 0, 0, 'Uk', 1),
+(28, '2017-05-01', '2017-05-01', 0.00, 0, 0, 'Uk', 1),
+(29, '2017-07-01', '2017-07-01', 0.00, 0, 0, 'Uk', 1),
+(30, '2017-08-01', '2017-08-01', 0.00, 0, 0, 'Uk', 1),
+(31, '2017-09-01', '2017-09-01', 0.00, 0, 0, 'Uk', 1),
+(32, '2017-10-01', '2017-10-01', 0.00, 0, 0, 'Uk', 1),
+(33, '2017-11-01', '2017-11-01', 0.00, 0, 0, 'Uk', 1),
+(34, '2017-12-01', '2017-12-01', 0.00, 0, 0, 'Uk', 1),
+(35, '2016-01-01', '2016-01-01', 0.00, 0, 0, 'Uk', 1),
+(36, '2016-02-01', '2017-02-01', 0.00, 0, 0, 'AT', 1),
+(37, '2016-02-01', '2017-02-01', 0.00, 0, 0, 'AT', 1);
 
 --
 -- Индексы сохранённых таблиц
@@ -959,17 +964,17 @@ ALTER TABLE `statistics`
 -- AUTO_INCREMENT для таблицы `skill`
 --
 ALTER TABLE `skill`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1064;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1064;
 --
 -- AUTO_INCREMENT для таблицы `skill_connection`
 --
 ALTER TABLE `skill_connection`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1725;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1725;
 --
 -- AUTO_INCREMENT для таблицы `statistics`
 --
 ALTER TABLE `statistics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 --
 -- Ограничения внешнего ключа сохраненных таблиц
 --
@@ -987,6 +992,7 @@ ALTER TABLE `skill_connection`
   ADD CONSTRAINT `skill_connection_ibfk_1` FOREIGN KEY (`skill1_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `skill_connection_ibfk_2` FOREIGN KEY (`skill2_id`) REFERENCES `skill` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `skill_connection_ibfk_3` FOREIGN KEY (`statistics_id`) REFERENCES `statistics` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

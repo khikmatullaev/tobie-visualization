@@ -2,17 +2,20 @@
 
 namespace app\models;
 
-use Yii;
-
 /**
  * This is the model class for table "statistics".
  *
  * @property integer $id
  * @property string $from_date
  * @property string $to_date
+ * @property double $occurrence
+ * @property integer $pass1link
+ * @property integer $pass2link
+ * @property string $country
  * @property integer $enabled
  *
  * @property Skill[] $skills
+ * @property SkillConnection[] $skillConnections
  */
 class Statistics extends \yii\db\ActiveRecord
 {
@@ -30,9 +33,11 @@ class Statistics extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['from_date', 'to_date, country'], 'safe'],
-            [['from_date, to_date, country'], 'string'],
-            [['enabled'], 'integer'],
+            [['from_date', 'to_date'], 'safe'],
+            [['to_date', 'occurrence', 'pass1link', 'pass2link', 'country'], 'required'],
+            [['occurrence'], 'number'],
+            [['pass1link', 'pass2link', 'enabled'], 'integer'],
+            [['country'], 'string', 'max' => 64],
         ];
     }
 
@@ -43,8 +48,11 @@ class Statistics extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'from_date' => 'From',
-            'to_date' => 'To',
+            'from_date' => 'From Date',
+            'to_date' => 'To Date',
+            'occurrence' => 'Occurrence',
+            'pass1link' => 'Pass1link',
+            'pass2link' => 'Pass2link',
             'country' => 'Country',
             'enabled' => 'Enabled',
         ];
@@ -56,5 +64,13 @@ class Statistics extends \yii\db\ActiveRecord
     public function getSkills()
     {
         return $this->hasMany(Skill::className(), ['statistics_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSkillConnections()
+    {
+        return $this->hasMany(SkillConnection::className(), ['statistics_id' => 'id']);
     }
 }

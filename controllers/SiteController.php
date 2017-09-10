@@ -2,16 +2,15 @@
 
 namespace app\controllers;
 
-use Yii;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\Response;
-use yii\helpers\ArrayHelper;
-use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\Statistics;
 use app\models\Skill;
 use app\models\SkillConnection;
+use app\models\Statistics;
+use Yii;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\Controller;
+use yii\web\Response;
 
 
 class SiteController extends Controller
@@ -115,32 +114,6 @@ class SiteController extends Controller
         return $this->render('keyword');
     }
 
-    protected function monthToNumber($month)
-    {
-        if( $month != null )
-        {
-            $m = explode(',', $month)[0];
-
-            switch($m)
-            {
-                case "Jan": return '2017-01-01';
-                case "Feb": return '2017-02-01';
-                case "Mar": return '2017-03-01';
-                case "Apr": return '2017-04-01';
-                case "May": return '2017-05-01';
-                case "Jun": return '2017-06-01';
-                case "Jul": return '2017-07-01';
-                case "Aug": return '2017-08-01';
-                case "Sept": return '2017-09-01';
-                case "Oct": return '2017-10-01';
-                case "Nov": return '2017-11-01';
-                case "Dec": return '2017-12-01';
-            }
-        }
-
-        return '2017-01-01';
-    }
-
     public function actionDatabase($month = null)
     {
         $statistics = Statistics::find()->where(['from_date' => $this->monthToNumber($month)])->one();
@@ -149,7 +122,7 @@ class SiteController extends Controller
 
         $json = [];
 
-        foreach( $skills as $skill )
+        foreach($skills as $skill )
             $json['nodes'][] = [
                 'id' => $skill->name,
                 'group' => $skill->cluster,
@@ -158,9 +131,8 @@ class SiteController extends Controller
 
             ];
 
-        foreach( $skill_connections as $skill_connection )
-            if($skill_connection->skill1->cluster != 0 && $skill_connection->skill2->cluster != 0)
-            {
+        foreach($skill_connections as $skill_connection )
+            if($skill_connection->skill1->cluster != 0 && $skill_connection->skill2->cluster != 0) {
                 $value = $skill_connection->skill1->cluster == $skill_connection->skill2->cluster ? 1 : 2;
 
                 $json['links'][] = [
@@ -172,8 +144,44 @@ class SiteController extends Controller
                 ];
             }
 
-        \Yii::$app->response->format = 'json';
+        Yii::$app->response->format = 'json';
         return $json;
+    }
+
+    protected function monthToNumber($month)
+    {
+        if ($month != null) {
+            $m = explode(',', $month)[0];
+
+            switch ($m) {
+                case "Jan":
+                    return '2017-01-01';
+                case "Feb":
+                    return '2017-02-01';
+                case "Mar":
+                    return '2017-03-01';
+                case "Apr":
+                    return '2017-04-01';
+                case "May":
+                    return '2017-05-01';
+                case "Jun":
+                    return '2017-06-01';
+                case "Jul":
+                    return '2017-07-01';
+                case "Aug":
+                    return '2017-08-01';
+                case "Sept":
+                    return '2017-09-01';
+                case "Oct":
+                    return '2017-10-01';
+                case "Nov":
+                    return '2017-11-01';
+                case "Dec":
+                    return '2017-12-01';
+            }
+        }
+
+        return '2017-01-01';
     }
 
     /**
@@ -181,88 +189,84 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-	 public function actionStrategic()
+    public function actionStrategic()
     {
-		return $this->render('strategic');
-	}
+        return $this->render('strategic');
+    }
+
     public function actionStrategicdb($from_date, $to_date, $country, $co, $ps1, $ps2)
     {
-		//find id in table statistics according to from_date,to_date,country
-		$statistics = Statistics::find()->where(['country' => $country])
-			->andWhere(['from_date' => $from_date])
-			->andWhere(['to_date' => $to_date])
-			->one();
+        //find id in table statistics according to from_date,to_date,country
+        $statistics = Statistics::find()->where(['country' => $country])
+            ->andWhere(['from_date' => $from_date])
+            ->andWhere(['to_date' => $to_date])
+            ->one();
 
         //find cluster names in table skill
-		$sql_1 = "SELECT DISTINCT cluster FROM skill WHERE statistics_id=:id AND cluster!=0";
-		$clusters = Skill::findBySql($sql_1,[':id' => $statistics->id])->all();
-		
-		$json = [];
-		for($i=0 ; $i<count($clusters) ; $i++){
-			$skills_1 = Skill::find()->where(['statistics_id' => $statistics->id])
-				->andWhere(['cluster' => $clusters[$i]->cluster])
-				->all();
-			$skill1_list = [];
-			foreach( $skills_1 as $skill )
-			{
-				$skill1_list[] = $skill->id;
-			}
-			//calculate the density for each cluster
-			$d_strengths = SkillConnection::find()->where(['statistics_id' => $statistics->id])
-				->andWhere(['skill1_id' => $skill1_list])
-				->andWhere(['skill2_id' => $skill1_list])
-				->andWhere(['>=','co_occurrence', $co])
-				->orderBy(['strength' => SORT_DESC])
-				->limit($ps1)
-				->all();
-			$density[$i] = 0;
-			foreach( $d_strengths as $strength )
-			{
-				$density[$i] = $density[$i] + $strength->strength;
-			}
-			$density[$i] = $density[$i]/count($d_strengths);
-			
-			//calculate the centrality for each cluster
-			$skills_2 = Skill::find()->where(['statistics_id' => $statistics->id])
-				->andWhere(['<>','cluster', $clusters[$i]->cluster])
-				->andWhere('cluster <> 0') 
-				->all();
-			$skill2_list = [];
-			foreach( $skills_2 as $skill )
-			{
-				$skill2_list[] = $skill->id;
-			}
-			$c_strengths = SkillConnection::find()->where(['statistics_id' => $statistics->id])
-				->andWhere(['or',['and',['skill1_id' => $skill1_list],['skill2_id' => $skill2_list]],['and',['skill1_id' => $skill2_list],['skill2_id' => $skill1_list]]])
-				->andWhere(['>=','co_occurrence', $co])
-				->orderBy(['strength' => SORT_DESC])
-				->limit($ps2)
-				->all();
-			$centrality[$i] = 0;
-			foreach( $c_strengths as $strength )
-			{
-				$centrality[$i] = $centrality[$i] + ($strength->strength)*($strength->strength);
-			}
-			$centrality[$i] = sqrt($centrality[$i]);
-			
-			//count the number of node in each cluster
-			$skill_list = [];
-			foreach( $d_strengths as $connection )
-			{
-				$skill_list[] = $connection->skill1_id;
-				$skill_list[] = $connection->skill2_id;
-			}
-			$num[$i] = count(array_unique($skill_list));
+        $sql_1 = "SELECT DISTINCT cluster FROM skill WHERE statistics_id=:id AND cluster!=0";
+        $clusters = Skill::findBySql($sql_1,[':id' => $statistics->id])->all();
 
-			$json[] = [
-				'name' => $clusters[$i]->cluster,
-				'density' => $density[$i],
-				'centrality' => $centrality[$i],
-				'nodeNum' => $num[$i],
-			];
-		}
+        $json = [];
+        for($i=0 ; $i<count($clusters) ; $i++){
+            $skills_1 = Skill::find()->where(['statistics_id' => $statistics->id])
+                ->andWhere(['cluster' => $clusters[$i]->cluster])
+                ->all();
+            $skill1_list = [];
+            foreach($skills_1 as $skill ) {
+                $skill1_list[] = $skill->id;
+            }
+            //calculate the density for each cluster
+            $d_strengths = SkillConnection::find()->where(['statistics_id' => $statistics->id])
+                ->andWhere(['skill1_id' => $skill1_list])
+                ->andWhere(['skill2_id' => $skill1_list])
+                ->andWhere(['>=','co_occurrence', $co])
+                ->orderBy(['strength' => SORT_DESC])
+                ->limit($ps1)
+                ->all();
+            $density[$i] = 0;
+            foreach($d_strengths as $strength ) {
+                $density[$i] = $density[$i] + $strength->strength;
+            }
+            $density[$i] = $density[$i]/count($d_strengths);
 
-        \Yii::$app->response->format = 'json';
+            //calculate the centrality for each cluster
+            $skills_2 = Skill::find()->where(['statistics_id' => $statistics->id])
+                ->andWhere(['<>','cluster', $clusters[$i]->cluster])
+                ->andWhere('cluster <> 0')
+                ->all();
+            $skill2_list = [];
+            foreach($skills_2 as $skill ) {
+                $skill2_list[] = $skill->id;
+            }
+            $c_strengths = SkillConnection::find()->where(['statistics_id' => $statistics->id])
+                ->andWhere(['or',['and',['skill1_id' => $skill1_list],['skill2_id' => $skill2_list]],['and',['skill1_id' => $skill2_list],['skill2_id' => $skill1_list]]])
+                ->andWhere(['>=','co_occurrence', $co])
+                ->orderBy(['strength' => SORT_DESC])
+                ->limit($ps2)
+                ->all();
+            $centrality[$i] = 0;
+            foreach($c_strengths as $strength ) {
+                $centrality[$i] = $centrality[$i] + ($strength->strength)*($strength->strength);
+            }
+            $centrality[$i] = sqrt($centrality[$i]);
+
+            //count the number of node in each cluster
+            $skill_list = [];
+            foreach($d_strengths as $connection ) {
+                $skill_list[] = $connection->skill1_id;
+                $skill_list[] = $connection->skill2_id;
+            }
+            $num[$i] = count(array_unique($skill_list));
+
+            $json[] = [
+                'name' => $clusters[$i]->cluster,
+                'density' => $density[$i],
+                'centrality' => $centrality[$i],
+                'nodeNum' => $num[$i],
+            ];
+        }
+
+        Yii::$app->response->format = 'json';
         return $json;
     }
 
@@ -279,24 +283,23 @@ class SiteController extends Controller
     public function actionOccurrencedb($from_date, $to_date, $country)
     {
         $statistics = Statistics::find()->where(['country' => $country])
-			->andWhere(['from_date' => $from_date])
-			->andWhere(['to_date' => $to_date])
-			->one();
+            ->andWhere(['from_date' => $from_date])
+            ->andWhere(['to_date' => $to_date])
+            ->one();
         $skills = Skill::find()->where(['statistics_id' => $statistics->id])
             ->orderBy(['occurrence' => SORT_DESC])
             ->limit(10)
             ->all();
 
         $json = [];
-        foreach( $skills as $skill )
-        {
+        foreach($skills as $skill ) {
             $json[] = [
                 'name' => $skill->name,
                 'occurrence' => $skill->occurrence,
             ];
         }
 
-        \Yii::$app->response->format = 'json';
+        Yii::$app->response->format = 'json';
         return $json;
     }
 }

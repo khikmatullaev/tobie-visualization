@@ -1,6 +1,6 @@
 <?php
-use yii\widgets\ActiveForm;
 use kartik\date\DatePicker;
+use yii\widgets\ActiveForm;
 
 $this->title = "Adding"
 ?>
@@ -12,20 +12,18 @@ $this->title = "Adding"
         'attribute' => 'from_date',
         'options' => ['placeholder' => 'Start date'],
         'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-        'form' => $form,
         'pluginOptions' => [
             'format' => 'yyyy/mm/01',
             'autoclose' => true,
             'minViewMode' => 1,
         ]
-    ]);;?>
+]); ?>
 
     <?= DatePicker::widget([
         'model' => $model,
         'attribute' => 'to_date',
-        'options' => ['placeholder' => 'Start date'],
+    'options' => ['placeholder' => 'End date'],
         'type' => DatePicker::TYPE_COMPONENT_PREPEND,
-        'form' => $form,
         'pluginOptions' => [
             'format' => 'yyyy/mm/01',
             'autoclose' => true,
@@ -33,8 +31,20 @@ $this->title = "Adding"
         ]
     ]);;?>
 
-    <?= $form->field($model, 'connection')->fileInput() ?>
-    <?= $form->field($model, 'occurrence')->fileInput() ?>
+
+<?= $form->field($model, 'occurrence') ?>
+<?= $form->field($model, 'pass1link')->dropDownList([
+    0 => '0',
+    1 => '1',
+    2 => '2',
+    3 => '3',
+]) ?>
+<?= $form->field($model, 'pass2link')->dropDownList([
+    0 => '0',
+    1 => '1',
+    2 => '2',
+    3 => '3',
+]) ?>
 
     <?= $form->field($model, 'country')->dropDownList([
         'Uk' => 'United Kingdom',

@@ -10,38 +10,30 @@ class UploadForm extends Model
     /**
      * @var UploadedFile
      */
-    public $connection;
-    public $occurrence;
+    public $connectionFile;
+    public $occurrenceFile;
     public $from_date;
     public $to_date;
+    public $occurrence;
+    public $pass1link;
+    public $pass2link;
     public $country;
 
     public function rules()
     {
         return [
-            [['connection'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv'],
-            [['occurrence'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv'],
-            [['from_date, to_date, country'], 'safe'],
+            [['connectionFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv'],
+            [['occurrenceFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv'],
+            [['from_date, to_date, country', 'occurrence', 'pass1link', 'pass2link'], 'safe'],
         ];
     }
 
     public function attributeLabels()
     {
         return [
-            'connection' => 'Connection',
-            'occurrence' => 'Occurrence',
+            'connectionFile' => 'ConnectionFile',
+            'occurrenceFile' => 'Occurrence File',
             'country' => 'Country',
         ];
-    }
-
-    public function upload()
-    {
-        if ($this->validate()) {
-            $this->Connection->saveAs('uploads/' . $this->Connection->baseName . '.' . $this->Connection->extension);
-            $this->Occurrence->saveAs('uploads/' . $this->Occurrence->baseName . '.' . $this->Occurrence->extension);
-            return true;
-        } else {
-            return false;
-        }
     }
 }
