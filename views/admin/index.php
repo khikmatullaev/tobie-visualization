@@ -31,6 +31,8 @@ $this->title = "Adding"
         ]
     ]);;?>
 
+<?= $form->field($model, 'connectionFile')->fileInput() ?>
+<?= $form->field($model, 'occurrenceFile')->fileInput() ?>
 
 <?= $form->field($model, 'occurrence') ?>
 <?= $form->field($model, 'pass1link')->dropDownList([

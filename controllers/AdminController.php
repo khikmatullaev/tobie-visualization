@@ -26,10 +26,10 @@ class AdminController extends \yii\web\Controller
             $country = Yii::$app->request->post()['UploadForm']['country'];
 
             $fileConnection = UploadedFile::getInstance($model, 'connectionFile');
-            $fileNameConnection = 'Data.' . $fileConnection->extension;
+            $fileNameConnection = 'DataConntection.' . $fileConnection->extension;
 
             $fileOccurrence = UploadedFile::getInstance($model, 'occurrenceFile');
-            $fileNameOccurrence = 'Data.' . $fileOccurrence->extension;
+            $fileNameOccurrence = 'DataOccurrence.' . $fileOccurrence->extension;
 
             if ($fileConnection->saveAs($fileNameConnection) && $fileOccurrence->saveAs($fileNameOccurrence)) {
                 // create month statistic
@@ -117,6 +117,17 @@ class AdminController extends \yii\web\Controller
 
     protected function skillOccurrence($filename, $statistics_id)
     {
+        $file = file($filename);
 
+        foreach ($file as $data) {
+            $columns = explode(",", $data);
+
+            $skill = Skill::find()->where(['name' => trim($columns[1]), 'statistics_id' => $statistics_id])->one();
+
+            if (!empty($skill)) {
+                $skill->occurrence = $columns[0];
+                $skill->save(false);
+            }
+        }
     }
 }
