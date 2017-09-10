@@ -8,7 +8,7 @@ namespace app\models;
  * @property integer $id
  * @property string $from_date
  * @property string $to_date
- * @property double $occurrence
+ * @property integer $cooccurrence
  * @property integer $pass1link
  * @property integer $pass2link
  * @property string $country
@@ -34,9 +34,8 @@ class Statistics extends \yii\db\ActiveRecord
     {
         return [
             [['from_date', 'to_date'], 'safe'],
-            [['to_date', 'occurrence', 'pass1link', 'pass2link', 'country'], 'required'],
-            [['occurrence'], 'number'],
-            [['pass1link', 'pass2link', 'enabled'], 'integer'],
+            [['to_date', 'cooccurrence', 'pass1link', 'pass2link', 'country'], 'required'],
+            [['pass1link', 'pass2link', 'enabled', 'cooccurrence'], 'integer'],
             [['country'], 'string', 'max' => 64],
         ];
     }
@@ -50,7 +49,7 @@ class Statistics extends \yii\db\ActiveRecord
             'id' => 'ID',
             'from_date' => 'From Date',
             'to_date' => 'To Date',
-            'occurrence' => 'Occurrence',
+            'cooccurrence' => 'Cooccurrence',
             'pass1link' => 'Pass1link',
             'pass2link' => 'Pass2link',
             'country' => 'Country',

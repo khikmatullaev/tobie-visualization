@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use Yii;
-
 /**
  * This is the model class for table "skill".
  *
@@ -11,7 +9,7 @@ use Yii;
  * @property integer $statistics_id
  * @property string $name
  * @property integer $cluster
- * @property double $occurrence
+ * @property integer $occurrence
  *
  * @property Statistics $statistics
  * @property SkillConnection[] $skillConnections
@@ -33,8 +31,7 @@ class Skill extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['statistics_id', 'cluster'], 'integer'],
-            [['occurrence'], 'number'],
+            [['statistics_id', 'cluster', 'occurrence'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['statistics_id'], 'exist', 'skipOnError' => true, 'targetClass' => Statistics::className(), 'targetAttribute' => ['statistics_id' => 'id']],
         ];
@@ -50,7 +47,7 @@ class Skill extends \yii\db\ActiveRecord
             'statistics_id' => 'Statistics ID',
             'name' => 'Name',
             'cluster' => 'Cluster',
-            'occurrence' => 'Occurrence',
+            'occurrence' => 'occurrence',
         ];
     }
 

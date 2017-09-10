@@ -20,7 +20,7 @@ class AdminController extends \yii\web\Controller
         if (Yii::$app->request->isPost) {
             $from_date = Yii::$app->request->post()['UploadForm']['from_date'];
             $to_date = Yii::$app->request->post()['UploadForm']['to_date'];
-            $occurrence = Yii::$app->request->post()['UploadForm']['occurrence'];
+            $cooccurrence = Yii::$app->request->post()['UploadForm']['cooccurrence'];
             $pass1link = Yii::$app->request->post()['UploadForm']['pass1link'];
             $pass2link = Yii::$app->request->post()['UploadForm']['pass2link'];
             $country = Yii::$app->request->post()['UploadForm']['country'];
@@ -36,7 +36,7 @@ class AdminController extends \yii\web\Controller
                 $statistics = new Statistics;
                 $statistics->from_date = $from_date;
                 $statistics->to_date = $to_date;
-                $statistics->occurrence = $occurrence;
+                $statistics->cooccurrence = $cooccurrence;
                 $statistics->pass1link = $pass1link;
                 $statistics->pass2link = $pass2link;
                 $statistics->country = $country;

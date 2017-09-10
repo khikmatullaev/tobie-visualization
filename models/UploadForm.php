@@ -14,7 +14,7 @@ class UploadForm extends Model
     public $occurrenceFile;
     public $from_date;
     public $to_date;
-    public $occurrence;
+    public $cooccurrence;
     public $pass1link;
     public $pass2link;
     public $country;
@@ -24,7 +24,7 @@ class UploadForm extends Model
         return [
             [['connectionFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv'],
             [['occurrenceFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv'],
-            [['from_date, to_date, country', 'occurrence', 'pass1link', 'pass2link'], 'safe'],
+            [['from_date, to_date, country', 'cooccurrence', 'pass1link', 'pass2link'], 'safe'],
         ];
     }
 
