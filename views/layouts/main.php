@@ -19,13 +19,10 @@ AppAsset::register($this);
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	
-    <script defer="defer" type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
     <script defer="defer" type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <script defer="defer" type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script defer="defer" type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
-    <script defer="defer" type="text/javascript" src="https://code.highcharts.com/highcharts-more.js"></script>
-	<script defer="defer" type="text/javascript" src="../../jQRangeSlider-5.7.2/jQRangeSlider-min.js"></script>
-	<link rel="stylesheet" href="../../jQRangeSlider-5.7.2/css/iThing.css" type="text/css"/>
+	<script defer="defer" type="text/javascript" src="../../web/js/jQRangeSlider-5.7.2/jQRangeSlider-min.js"></script>
+	<link rel="stylesheet" href="../../web/js/jQRangeSlider-5.7.2/css/iThing.css" type="text/css"/>
 
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
@@ -47,9 +44,9 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            ['label' => 'Connection structure', 'url' => ['/site/keyword']],
+            ['label' => 'Keyword Structure', 'url' => ['/site/keyword']],
             ['label' => 'Strategic Diagram', 'url' => ['/site/strategic']],
-            ['label' => 'Occurrence of skills', 'url' => ['/site/occurrence']],
+            ['label' => 'Occurrence of Skills', 'url' => ['/site/occurrence']],
             ['label' => 'CSV', 'url' => ['/admin/index'], 'visible' => !Yii::$app->user->isGuest],
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]

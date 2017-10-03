@@ -114,33 +114,38 @@ class SiteController extends Controller
         return $this->render('keyword');
     }
 
-    public function actionDatabase($month = null)
+    public function actionKeyworddb($from_date, $to_date, $country, $co, $ps1, $ps2)
     {
-        $statistics = Statistics::find()->where(['from_date' => $this->monthToNumber($month)])->one();
-        $skills = Skill::find()->where(['statistics_id' => $statistics->id])->andWhere("cluster <> 0")->all();
-        $skill_connections = SkillConnection::find()->where(['statistics_id' => $statistics->id])->all();
+        $statistics = Statistics::find()->where(['country' => $country])
+            ->andWhere(['from_date' => $from_date])
+            ->andWhere(['to_date' => $to_date])
+			->andWhere(['cooccurrence' => $co])
+			->andWhere(['pass1link' => $ps1])
+			->andWhere(['pass2link' => $ps2])
+            ->one();
+        $skills = Skill::find()->where(['statistics_id' => $statistics->id])
+			->andWhere("cluster <> 0")
+			->all();
+        $skill_connections = SkillConnection::find()
+			->where(['statistics_id' => $statistics->id])
+			->all();
 
         $json = [];
 
         foreach($skills as $skill )
             $json['nodes'][] = [
                 'id' => $skill->name,
-                'group' => $skill->cluster,
-                'description' => 'skill №'.$skill->id . ' '.$skill->name,
-                'radius' => $skill->occurrence,
-
+                'cluster' => $skill->cluster,
+                'occurrence' => $skill->occurrence,
             ];
 
         foreach($skill_connections as $skill_connection )
             if($skill_connection->skill1->cluster != 0 && $skill_connection->skill2->cluster != 0) {
-                $value = $skill_connection->skill1->cluster == $skill_connection->skill2->cluster ? 1 : 2;
-
                 $json['links'][] = [
                     'source' => $skill_connection->skill1->name,
                     'target' => $skill_connection->skill2->name,
-                    'value' => $value,
                     'strength' => $skill_connection->strength,
-                    'description' => 'Connection №'.$skill_connection->id,
+                    'cooccurrence' => $skill_connection->co_occurrence,
                 ];
             }
 
@@ -200,6 +205,9 @@ class SiteController extends Controller
         $statistics = Statistics::find()->where(['country' => $country])
             ->andWhere(['from_date' => $from_date])
             ->andWhere(['to_date' => $to_date])
+			->andWhere(['cooccurrence' => $co])
+			->andWhere(['pass1link' => $ps1])
+			->andWhere(['pass2link' => $ps2])
             ->one();
 
         //find cluster names in table skill
@@ -219,9 +227,7 @@ class SiteController extends Controller
             $d_strengths = SkillConnection::find()->where(['statistics_id' => $statistics->id])
                 ->andWhere(['skill1_id' => $skill1_list])
                 ->andWhere(['skill2_id' => $skill1_list])
-                ->andWhere(['>=','co_occurrence', $co])
                 ->orderBy(['strength' => SORT_DESC])
-                ->limit($ps1)
                 ->all();
             $density[$i] = 0;
             foreach($d_strengths as $strength ) {
@@ -240,9 +246,7 @@ class SiteController extends Controller
             }
             $c_strengths = SkillConnection::find()->where(['statistics_id' => $statistics->id])
                 ->andWhere(['or',['and',['skill1_id' => $skill1_list],['skill2_id' => $skill2_list]],['and',['skill1_id' => $skill2_list],['skill2_id' => $skill1_list]]])
-                ->andWhere(['>=','co_occurrence', $co])
                 ->orderBy(['strength' => SORT_DESC])
-                ->limit($ps2)
                 ->all();
             $centrality[$i] = 0;
             foreach($c_strengths as $strength ) {

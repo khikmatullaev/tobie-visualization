@@ -1,133 +1,283 @@
-function graphVisualization()
-{
-    document.getElementById("graph").textContent = '';
+/**Initialization**/
+var graph = [];
+//Append a SVG to the body of the html page. Assign this SVG as an object to svg.
+var svg = d3.select("svg");
+var width = +svg.attr("width");
+var height = +svg.attr("height");
+setData();
+drawGraph();
 
-    var svg = d3.select("svg"),
-        width = +svg.attr("width"),
-        height = +svg.attr("height");
+function drawGraph(){	
+		
+	//Create a new force simulation. 
+	//Charge is global force that affects every node. 
+	//Center translates all nodes to visually move them into the center of the svg element.
+	var simulation = d3.forceSimulation()
+		.force("link", d3.forceLink().id(function(d) { return d.id; }))
+		.force("charge", d3.forceManyBody().strength(setStrength()))
+		.force("center", d3.forceCenter(width/2, height/2));
+		
+	//d3.json("keyword.json", function(error, graph) {
+	//	if (error) throw error;
 
-    svg.append("rect")
-        .attr("width", width)
-        .attr("height", height)
-        .style("fill", "none")
-        .style("pointer-events", "all")
-        .call(d3.zoom()
-            .scaleExtent([1 / 2, 4])
-            .on("zoom", zoomed));
+	//Set up tooltip
+	var linkTip = d3.tip()
+		.attr("class", "d3-tip")
+		.offset([-10, 0])
+		.html(function (d) { return  "node1: "+d.source.id+"<br>node2: "+d.target.id+"<br>Strength: "+d.strength+"<br>Co-occurrence: "+d.cooccurrence; })
+	svg.call(linkTip);
 
-    var g = svg.append("g");
+	var nodeTip = d3.tip()
+		.attr("class", "d3-tip")
+		.offset([-10, 0])
+		.html(function (d) { return "node: "+d.id+"<br>cluster: "+d.cluster+"<br>occurrence: "+d.occurrence; });
+	svg.call(nodeTip);
 
-    function zoomed() {
-        g.attr("transform", d3.event.transform);
-    }
+	//Create the line elements to display our links respectively.
+	var link = svg.append("g")
+		.attr("class", "links")
+		.selectAll("line")
+		.data(graph.links)
+		.enter().append("line")
+		.attr("stroke-width", function(d) { return setWidth(d.strength); })
+		.attr("stroke", function(d) { return setLineColor(d.source, d.target) })
+		.on("mouseover", linkTip.show)
+		.on("mouseout", linkTip.hide);
 
-    var color = d3.scaleOrdinal(d3.schemeCategory20);
+	//Draw circle elements to display the nodes
+	var node = svg.append("g")
+		.attr("class", "nodes")
+		.selectAll("circle")
+		.data(graph.nodes)
+		.enter().append("circle")
+		.attr("r", function(d) { return setRadius(d.occurrence) })
+		.attr("fill", function(d) { return color[d.cluster]; })
+		.on('dblclick', connectedNodes)
+		.on("mouseover", nodeTip.show)
+		.on("mouseout", nodeTip.hide)
+		.call(d3.drag()
+			.on("start", dragstarted)
+			.on("drag", dragged)
+			.on("end", dragended));
 
-    var simulation = d3.forceSimulation()
-        .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(100).strength(0.6))
-        .force("charge", d3.forceManyBody().strength(-100))
-        .force("center", d3.forceCenter(width / 2, height / 2));
+	//Draw text elements to display the name of each node
+	var text = svg.append("g")
+		.attr("class", "texts")
+		.selectAll("text")
+		.data(graph.nodes)
+		.enter().append("text")
+		.text(function(d) { return d.id; })
+		.attr("font-size", 10)
+		.attr("dx", 15)
+		.attr("dy", ".35em");
 
-    var month = $('#slider-time-begin').text();
+	//Start the simulation, update the coordinates of nodes, texts and links.
+	simulation
+		.nodes(graph.nodes)
+		.on("tick", ticked);
 
-    d3.json("database?month=" + month, function (error, graph) {
-        if (error) throw error;
+	simulation.force("link")
+		.links(graph.links);
+		
+	//Define a tick functions that is executed on every simulation tick.
+	function ticked() {
+		link
+			.attr("x1", function(d) { return d.source.x; })
+			.attr("y1", function(d) { return d.source.y; })
+			.attr("x2", function(d) { return d.target.x; })
+			.attr("y2", function(d) { return d.target.y; });
 
-        var link = g.append("g")
-            .attr("class", "links")
-            .selectAll("line")
-            .data(graph.links)
-            .enter().append("line")
-            .attr("stroke", function(d) {
-                return (d.value === 1) ? "#d8d3d3" : "#a31818";
-            })
-            .attr("stroke-width", function (d) {
-                return d.strength*1000;
-            });
+		node
+			.attr("cx", function(d) { return d.x; })
+			.attr("cy", function(d) { return d.y; });
+		text
+			.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+	}
+	function dragstarted(d) {
+	  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+	  d.fx = d.x;
+	  d.fy = d.y;
+	}
 
-        link.append("title")
-            .text(function (d) {
-                return d.description;
-            });
+	function dragged(d) {
+	  d.fx = d3.event.x;
+	  d.fy = d3.event.y;
+	}
 
-        var node = g.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(graph.nodes)
-            .enter().append("circle")
-            .attr("r", function (d) {
-                return d.radius * 5;
-            })
-            .attr("fill", function (d) {
-                return color(d.group);
-            })
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
+	function dragended(d) {
+	  if (!d3.event.active) simulation.alphaTarget(0);
+	  d.fx = null;
+	  d.fy = null;
+	}
+	//Toggle stores whether the highlighting is on
+	var toggle = 0;
+	//This function looks up whether a pair are in the same cluster.
+	function sameCluster(a, b) {
+		var sourceCluster = getNodeById(a.id)[0].cluster;
+		var targetCluster = getNodeById(b.id)[0].cluster;
+		if(sourceCluster == targetCluster){
+			return 1;
+		}
+		else{
+			return 0;
+		}
+	} 
+	function connectedNodes() {
+		if (toggle == 0) {
+			//Reduce the opacity of all but the neighbouring nodes
+			d = d3.select(this).node().__data__;
+			node.style("opacity", function (o) {
+				return sameCluster(d, o)? 1 : 0.1;
+			});
+			text.style("opacity", function (o) {
+				return sameCluster(d, o)? 1 : 0.1;
+			});
+			link.style("opacity", function (o) {
+				if(sameCluster(d,o.source)==1&&sameCluster(d,o.target)==1){
+					return 1;
+				}
+				else{
+					return 0.1;
+				}
+			});
+			toggle = 1;
+		} else {
+			//Put them back to opacity=1
+			node.style("opacity", 1);
+			text.style("opacity", 1);
+			link.style("opacity", 1);
+			toggle = 0;
+		}
+	}
+	//Show specified cluster when jumped from strategic diagram
+	var cluster;
+	if(sessionStorage.getItem("cluster")){
+		cluster = sessionStorage.getItem("cluster");
+		node.style("opacity", function (d){ return showNodes(d); });
+		text.style("opacity", function (d){ return showNodes(d); });
+		link.style("opacity", function (d){ return showLinks(d); })
+		toggle = 1;
+		sessionStorage.removeItem('cluster');
+	}
+	function showNodes(node){
+		if( node.cluster == cluster ){
+			return 1;
+		}
+		else{
+			return 0.1;
+		}
+	}
+	function showLinks(link){
+		if( link.source.cluster == cluster && link.target.cluster == cluster){
+			return 1;
+		}
+		else{
+			return 0.1;
+		}
+	}
+}
 
-        node.append("title")
-            .text(function (d) {
-                return d.description;
-            });
+/**functions**/
+//Set node strength accessor according to node numbers
+function setStrength(){
+	var length = graph.nodes.length;
+	if(length <= 10){
+		return -100;
+	}
+	else if(length > 10 && length <= 25){
+		return -75;
+	}
+	else if(length > 25 && length <= 50){
+		return -50;
+	}
+	else{
+		return -30;
+	}
+}
 
-        var text = g.append("g").attr("class", "labels").selectAll("g")
-            .data(graph.nodes)
-            .enter().append("g");
+//Set radius of each node according to its occurrence, the radius is between 5px and 15px.
+function setRadius(occurrence){
+	var maxRadius = 15;
+	var minRadius = 5;
+	var occurrenceArray = new Array();
+	for(var i=0 ; i<graph.nodes.length ; i++){
+		occurrenceArray[i] = graph.nodes[i].occurrence;
+	}
+	var max = Math.max.apply(null,occurrenceArray);
+	var min = Math.min.apply(null,occurrenceArray);
+	var interval = (max - min) / (maxRadius - minRadius);
+	var scale = 1 / interval;
+	var radius = (occurrence - min) * scale + minRadius;
+	return radius;
+}
 
-        text.append("text")
-            .attr("dx", 10)
-            .attr("dy", ".35em")
-            .text(function(d) { return d.id; });
+//Set line color of each link, if two nodes in same cluster, the color is same as the nodes; else, the color will be '#E5E5E5'.
+function setLineColor(source, target){
+	var sourceCluster = getNodeById(source)[0].cluster;
+	var targetCluster = getNodeById(target)[0].cluster;
+	if(sourceCluster == targetCluster){
+		return color[sourceCluster];
+	}
+	else{
+		return '#999999';
+	}
+}
+function getNodeById(id) {
+	var data = graph.nodes;
+	return data.filter(
+		function(data) {
+			return data.id == id
+		}
+	);
+}
 
-        simulation
-            .nodes(graph.nodes)
-            .on("tick", ticked);
+//Set width of each link according to its strength, the radius is between 2px and 5px.
+function setWidth(strength){
+	var maxWidth = 5;
+	var minWidth = 2;
+	var strengthArray = new Array();
+	for(var i=0 ; i<graph.links.length ; i++){
+		strengthArray[i] = graph.links[i].strength;
+	}
+	var max = Math.max.apply(null,strengthArray);
+	var min = Math.min.apply(null,strengthArray);
+	var interval = (max - min) / (maxWidth - minWidth);
+	var scale = 1 / interval;
+	var width = (strength - min) * scale + minWidth;
+	return width;
+}
 
-        simulation.force("link")
-            .links(graph.links);
+/**Data**/
+//send request to server to get data with (from_date,to_date,country)
+function getData(from_date,to_date,country,co,ps1,ps2){
+    var result = new Array();
 
-        function ticked() {
-            link
-                .attr("x1", function (d) {
-                    return d.source.x;
-                })
-                .attr("y1", function (d) {
-                    return d.source.y;
-                })
-                .attr("x2", function (d) {
-                    return d.target.x;
-                })
-                .attr("y2", function (d) {
-                    return d.target.y;
-                });
-
-            node
-                .attr("cx", function (d) {
-                    return d.x;
-                })
-                .attr("cy", function (d) {
-                    return d.y;
-                });
-            text
-                .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+    $.ajax({
+        url: 'keyworddb',
+        type: "GET",
+        data:{from_date:from_date, to_date:to_date, country:country, co:co, ps1:ps1, ps2:ps2},
+        dataType: "json",
+        async: false,
+        error: function(){
+            alert('Error loading XML document\n'+'from_date: '+from_date+'\n'+'end_date: '+to_date+'\n'+'country: '+country);
+        },
+        success: function(data){
+            result = data;
         }
     });
 
-    function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-
-    function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-    }
-
-    function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    }
+    return result;
 }
+
+function setData(){
+	graph = getData(num2ymd(start_date[0],start_date[1]),num2ymd(end_date[0],end_date[1]),country[visibleSeriesIndex][0],co,ps1,ps2);
+}
+
+function update(){
+	svg.selectAll("line").remove();
+	svg.selectAll("circle").remove();
+	svg.selectAll("text").remove();
+	drawGraph();
+}
+
+/**Filters**/
