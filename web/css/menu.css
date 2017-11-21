@@ -17,14 +17,15 @@
     margin-left: 228px;
     width: 200px;
 	height: 170px;
-    padding: 0px 0px 0px 0px;
     border: 2px solid #dd4040;
     background: #3C3C3C;
     z-index: 10;
-    overflow: hidden;
 	float: left;
 }
-.ch-drop li {
+.ch-drop .cf {
+	height: 30px;
 	font-size: 15px;
 	color: #ffffff;
+	margin-top: 20px;
+	margin-left: 20px;
 }

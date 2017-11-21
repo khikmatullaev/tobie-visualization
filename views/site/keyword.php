@@ -68,15 +68,9 @@
 					</label>
 				</a>
 				<div class="ch-drop" tag="1">
-					<li class="cf">
-						<label>Co-occurrence(min): 1</label>
-					</li>
-					<li class="cf">
-						<label>External-link(max): 2</label>
-					</li>
-					<li class="cf">
-						<label>Internal-link(max): 2</label>
-					</li>
+					<div class="cf">Co-occurrence(min): 1</div>
+					<div class="cf">External-link(max): 2</div>
+					<div class="cf">Internal-link(max): 2</div>
 				</div>
 				<a href="#" class="ui-icon">
 					<label>Option 2
@@ -84,15 +78,9 @@
 					</label>
 				</a>
 				<div class="ch-drop" tag="1">
-					<li class="cf">
-						<label>Co-occurrence(min): 2</label>
-					</li>
-					<li class="cf">
-						<label>External-link(max): 3</label>
-					</li>
-					<li class="cf">
-						<label>Internal-link(max): 3</label>
-					</li>
+					<div class="cf">Co-occurrence(min): 2</div>
+					<div class="cf">External-link(max): 3</div>
+					<div class="cf">Internal-link(max): 3</div>
 				</div>
 				<a href="#" class="ui-icon">
 					<label>Option 3
@@ -100,15 +88,9 @@
 					</label>
 				</a>
 				<div class="ch-drop" tag="1">
-					<li class="cf">
-						<label>Co-occurrence(min): 3</label>
-					</li>
-					<li class="cf">
-						<label>External-link(max): 4</label>
-					</li>
-					<li class="cf">
-						<label>Internal-link(max): 4</label>
-					</li>
+					<div class="cf">Co-occurrence(min): 5</div>
+					<div class="cf">External-link(max): 5</div>
+					<div class="cf">Internal-link(max): 8</div>
 				</div>
 				<a href="#" class="ui-icon">
 					<label>Option 4
@@ -116,15 +98,9 @@
 					</label>
 				</a>
 				<div class="ch-drop" tag="1">
-					<li class="cf">
-						<label>Co-occurrence(min): 4</label>
-					</li>
-					<li class="cf">
-						<label>External-link(max): 5</label>
-					</li>
-					<li class="cf">
-						<label>Internal-link(max): 5</label>
-					</li>
+					<div class="cf">Co-occurrence(min): 8</div>
+					<div class="cf">External-link(max): 5</div>
+					<div class="cf">Internal-link(max): 8</div>
 				</div>
 				<a href="#" class="ui-icon">
 					<label>Option 5
@@ -132,15 +108,9 @@
 					</label>
 				</a>
 				<div class="ch-drop" tag="1">
-					<li class="cf">
-						<label>Co-occurrence(min): 4</label>
-					</li>
-					<li class="cf">
-						<label>External-link(max): 4</label>
-					</li>
-					<li class="cf">
-						<label>Internal-link(max): 6</label>
-					</li>
+					<div class="cf">Co-occurrence(min): 15</div>
+					<div class="cf">External-link(max): 8</div>
+					<div class="cf">Internal-link(max): 12</div>
 				</div>
 			</div>
 		</div>
@@ -155,7 +125,7 @@
 			</div>
 		</div>
 		<div class="page-content">
-			<svg height="400", width="800"></svg>
+			<svg height="600", width="800"></svg>
 		</div>
 		<div class="footer">
 			<div id="time-range" style="width: 80%; margin-left: 10%; margin-bottom: 20px">

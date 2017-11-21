@@ -35,18 +35,8 @@ $this->title = "Adding"
 <?= $form->field($model, 'occurrenceFile')->fileInput() ?>
 
 <?= $form->field($model, 'cooccurrence') ?>
-<?= $form->field($model, 'pass1link')->dropDownList([
-    0 => '0',
-    1 => '1',
-    2 => '2',
-    3 => '3',
-]) ?>
-<?= $form->field($model, 'pass2link')->dropDownList([
-    0 => '0',
-    1 => '1',
-    2 => '2',
-    3 => '3',
-]) ?>
+<?= $form->field($model, 'pass1link') ?>
+<?= $form->field($model, 'pass2link') ?>
 
     <?= $form->field($model, 'country')->dropDownList([
         'Uk' => 'United Kingdom',

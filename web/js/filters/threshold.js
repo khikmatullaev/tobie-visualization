@@ -1,9 +1,9 @@
 var threshold = {
 	 1:new Array(1,2,2),
 	 2:new Array(2,3,3),
-	 3:new Array(3,4,4),
-	 4:new Array(4,5,5),
-	 5:new Array(4,4,6),
+	 3:new Array(5,5,8),
+	 4:new Array(8,5,8),
+	 5:new Array(15,8,12),
 };
 var thIndex;
 var co;

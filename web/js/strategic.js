@@ -275,7 +275,7 @@ function getData(from_date,to_date,country,co,ps1,ps2){
         dataType: "json",
         async: false,
         error: function(){
-            alert('Error loading XML document\n'+'from_date: '+from_date+'\n'+'end_date: '+to_date+'\n'+'country: '+country);
+            alert('Error loading XML document\n'+'from_date: '+from_date+'\n'+'end_date: '+to_date+'\n'+'country: '+country+'\n'+"co-occurence = "+co+'\n'+"pass1link = "+ps1+'\n'+"pass2link = "+ps2);
         },
         success: function(data){
             result = data;

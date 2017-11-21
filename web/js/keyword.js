@@ -182,16 +182,28 @@ function drawGraph(){
 function setStrength(){
 	var length = graph.nodes.length;
 	if(length <= 10){
-		return -100;
-	}
-	else if(length > 10 && length <= 25){
 		return -75;
 	}
-	else if(length > 25 && length <= 50){
+	else if(length > 10 && length <= 20){
 		return -50;
 	}
-	else{
+	else if(length > 20 && length <= 30){
+		return -40;
+	}
+	else if(length > 30 && length <= 40){
 		return -30;
+	}
+	else if(length > 40 && length <= 50){
+		return -25;
+	}
+	else if(length > 50 && length <= 75){
+		return -20;
+	}
+	else if(length > 75 && length <= 100){
+		return -15;
+	}
+	else {
+		return -10;
 	}
 }
 
@@ -259,7 +271,7 @@ function getData(from_date,to_date,country,co,ps1,ps2){
         dataType: "json",
         async: false,
         error: function(){
-            alert('Error loading XML document\n'+'from_date: '+from_date+'\n'+'end_date: '+to_date+'\n'+'country: '+country);
+            alert('Error loading XML document\n'+'from_date: '+from_date+'\n'+'end_date: '+to_date+'\n'+'country: '+country+'\n'+"co-occurence = "+co+'\n'+"pass1link = "+ps1+'\n'+"pass2link = "+ps2);
         },
         success: function(data){
             result = data;
